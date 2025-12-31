@@ -1,6 +1,8 @@
 import { Link, Route, Routes } from 'react-router-dom';
+import Arcade from './pages/Arcade';
 import Auth from './pages/Auth';
 import Kiosk from './pages/Kiosk';
+import Play from './pages/Play';
 
 function Home() {
   return (
@@ -9,6 +11,9 @@ function Home() {
       <p className="muted">Coinbase Commerce + webhook-driven credit fulfillment (dev skeleton).</p>
       <div className="card">
         <ul>
+          <li>
+            <Link to="/arcade">Enter the Arcade</Link>
+          </li>
           <li>
             <Link to="/kiosk">Go to the Coin Machine</Link>
           </li>
@@ -23,7 +28,9 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/arcade" element={<Arcade />} />
       <Route path="/kiosk" element={<Kiosk />} />
+      <Route path="/play/:gameId" element={<Play />} />
       <Route
         path="*"
         element={

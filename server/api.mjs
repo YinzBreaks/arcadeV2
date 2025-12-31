@@ -1,13 +1,16 @@
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import Fastify from 'fastify';
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { authenticateRequest } from './auth/supabase.mjs';
 import { SKU_CATALOG } from './commerce/catalog.mjs';
 import { createCharge } from './commerce/coinbase.mjs';
 import { openDb } from './db.mjs';
 import { getEnv } from './env.mjs';
-import { getWallet } from './wallet.mjs';
+import { consumeCredit, getWallet, hasActivePass, recordPlayTransaction } from './wallet.mjs';
+
+// Play session duration in seconds (5 minutes)
+const PLAY_SESSION_DURATION_SECONDS = 300;
 
 const env = getEnv();
 const db = openDb();
@@ -92,6 +95,114 @@ app.post('/commerce/create-charge', async (req, reply) => {
     );
     return reply.code(502).send({ ok: false, error: err?.message || 'Create charge failed' });
   }
+});
+
+// ============================================================================
+// PLAY SESSION ENDPOINTS
+// ============================================================================
+
+/**
+ * POST /play/start
+ * Starts a new play session. Atomically consumes credit or uses pass.
+ * Returns a short-lived play token.
+ */
+app.post('/play/start', async (req, reply) => {
+  const userId = await authenticateRequest(req, reply);
+  if (!userId) return; // Response already sent
+
+  const body = req.body || {};
+  const gameId = body.gameId;
+
+  if (typeof gameId !== 'string' || !gameId.trim()) {
+    return reply.code(400).send({ ok: false, error: 'gameId is required.' });
+  }
+
+  const wallet = getWallet(db, userId);
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + PLAY_SESSION_DURATION_SECONDS * 1000).toISOString();
+  const createdAt = now.toISOString();
+
+  // Determine play mode and authorize atomically
+  let mode;
+
+  // Use transaction for atomicity
+  const tx = db.transaction(() => {
+    // Check for active pass first
+    if (hasActivePass(wallet)) {
+      mode = 'pass';
+    } else if (wallet.credits >= 1) {
+      // Attempt to consume credit
+      const consumed = consumeCredit(db, userId);
+      if (!consumed) {
+        // Race condition: credits were consumed between check and update
+        return null;
+      }
+      mode = 'credit';
+    } else {
+      // Insufficient credits and no pass
+      return null;
+    }
+
+    // Generate cryptographically random play token
+    const playToken = randomBytes(24).toString('base64url');
+
+    // Create play session record
+    db.prepare(
+      'INSERT INTO play_sessions (play_token, user_id, game_id, mode, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    ).run(playToken, userId, gameId.trim(), mode, expiresAt, createdAt);
+
+    // Record transaction
+    recordPlayTransaction(db, userId, gameId.trim(), mode, playToken);
+
+    return { playToken, mode, expiresAt };
+  });
+
+  const result = tx();
+
+  if (!result) {
+    return reply.code(403).send({ ok: false, error: 'INSUFFICIENT_CREDITS' });
+  }
+
+  req.log.info({ userId, gameId, mode: result.mode, playToken: result.playToken }, 'Play session started');
+
+  return reply.send({
+    ok: true,
+    playToken: result.playToken,
+    mode: result.mode,
+    expiresAt: result.expiresAt,
+  });
+});
+
+/**
+ * GET /play/verify
+ * Verifies a play token is valid and not expired.
+ */
+app.get('/play/verify', async (req, reply) => {
+  const token = req.query.token;
+
+  if (typeof token !== 'string' || !token.trim()) {
+    return reply.code(400).send({ ok: false, error: 'token query parameter is required.' });
+  }
+
+  const session = db.prepare('SELECT * FROM play_sessions WHERE play_token = ?').get(token.trim());
+
+  if (!session) {
+    return reply.send({ ok: false, error: 'INVALID_TOKEN' });
+  }
+
+  const now = new Date();
+  const expiresAt = new Date(session.expires_at);
+
+  if (expiresAt <= now) {
+    return reply.send({ ok: false, error: 'TOKEN_EXPIRED' });
+  }
+
+  return reply.send({
+    ok: true,
+    gameId: session.game_id,
+    mode: session.mode,
+    expiresAt: session.expires_at,
+  });
 });
 
 try {

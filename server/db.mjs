@@ -41,6 +41,15 @@ export function openDb() {
       meta_json TEXT,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS play_sessions (
+      play_token TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      game_id TEXT NOT NULL,
+      mode TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
   `);
 
   return db;
