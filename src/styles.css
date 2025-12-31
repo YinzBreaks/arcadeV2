@@ -412,10 +412,10 @@ p {
 }
 
 /* ============================================================================
-   ARCADE ROOM MODE STYLES
+   ARCADE ROOM MODE STYLES — "Photo Vibe" Pass
    ============================================================================ */
 
-/* Reduced motion preference */
+/* Reduced motion preference - disable flickers and pulses */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -423,6 +423,16 @@ p {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .arcade-title {
+    animation: none !important;
+  }
+  .arcade-machine--available {
+    animation: none !important;
+  }
+  .machine-glow,
+  .machine-floor-light {
+    animation: none !important;
   }
 }
 
@@ -433,10 +443,11 @@ p {
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #020106;
-  /* Camera perspective - looking into the room */
-  perspective: 1200px;
-  perspective-origin: 50% 40%;
+  /* Darker, bluer background - like a real dark arcade */
+  background: #010208;
+  /* Camera perspective - slightly less top-down, more immersive */
+  perspective: 1000px;
+  perspective-origin: 50% 45%;
   /* Entrance animation */
   opacity: 0;
   transform: scale(0.97);
@@ -451,181 +462,304 @@ p {
 }
 
 /* ============================================================================
-   ROOM STRUCTURE - Back wall, floor plane, vignette
+   ROOM STRUCTURE - Back wall, floor plane, vignette, grain
    ============================================================================ */
 
-/* Back wall - dark purple/blue gradient, the "far" wall */
+/* Back wall - dark purple/indigo with more depth */
 .room-back-wall {
   position: absolute;
   top: 0;
   left: -10%;
   right: -10%;
-  height: 55%;
+  height: 50%;
   background: 
-    /* Subtle brick/panel texture hint */
+    /* Subtle vertical panel texture */
     repeating-linear-gradient(
       90deg,
       transparent 0px,
-      transparent 80px,
-      rgba(255, 255, 255, 0.02) 80px,
-      rgba(255, 255, 255, 0.02) 82px
+      transparent 100px,
+      rgba(60, 40, 80, 0.03) 100px,
+      rgba(60, 40, 80, 0.03) 102px
     ),
+    /* Horizontal bands */
     repeating-linear-gradient(
       0deg,
       transparent 0px,
-      transparent 40px,
-      rgba(255, 255, 255, 0.015) 40px,
-      rgba(255, 255, 255, 0.015) 42px
+      transparent 60px,
+      rgba(80, 50, 100, 0.02) 60px,
+      rgba(80, 50, 100, 0.02) 62px
     ),
-    /* Main gradient - dark at edges, slightly lighter center for depth */
-    radial-gradient(ellipse 120% 100% at 50% 100%, #1a0a2e 0%, #0a0418 40%, #030108 100%);
+    /* Main gradient - dark indigo, lighter purple center for ambient bounce */
+    radial-gradient(ellipse 100% 120% at 50% 120%, #1a0a28 0%, #0c0614 35%, #050208 70%, #010104 100%);
   z-index: 1;
-  /* Slight 3D tilt for depth */
   transform-style: preserve-3d;
-  transform: rotateX(2deg) translateZ(-20px);
+  transform: rotateX(1deg) translateZ(-30px);
 }
 
-/* Floor plane - perspective transformed checkerboard */
+/* Wall trim stripe - purple neon band across wall */
+.wall-trim {
+  position: absolute;
+  bottom: 25%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(150, 50, 180, 0.4) 15%,
+    rgba(180, 80, 200, 0.6) 50%,
+    rgba(150, 50, 180, 0.4) 85%,
+    transparent 100%
+  );
+  box-shadow: 
+    0 0 15px rgba(150, 50, 180, 0.5),
+    0 0 30px rgba(150, 50, 180, 0.3);
+}
+
+/* Decorative posters/panels on wall */
+.wall-poster {
+  position: absolute;
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+.wall-poster--1 {
+  top: 20%;
+  left: 18%;
+  width: 35px;
+  height: 50px;
+  background: linear-gradient(180deg, #1a1025 0%, #0d0810 100%);
+  border: 1px solid rgba(100, 60, 120, 0.3);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 0 15px rgba(80, 200, 255, 0.05);
+}
+
+.wall-poster--2 {
+  top: 15%;
+  right: 20%;
+  width: 28px;
+  height: 42px;
+  background: linear-gradient(180deg, #15101a 0%, #0a0610 100%);
+  border: 1px solid rgba(120, 80, 140, 0.25);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 0 12px rgba(255, 100, 150, 0.04);
+}
+
+.wall-poster--3 {
+  top: 28%;
+  right: 28%;
+  width: 22px;
+  height: 30px;
+  background: linear-gradient(180deg, #12091a 0%, #080510 100%);
+  border: 1px solid rgba(100, 70, 130, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Doorway warm light spill - like light from another room */
+.wall-door-glow {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 100px;
+  background: radial-gradient(ellipse 100% 100% at 50% 100%, 
+    rgba(255, 200, 120, 0.08) 0%, 
+    rgba(255, 180, 100, 0.04) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Floor plane - ARCADE CARPET (no grid, confetti specks, dark base) */
 .room-floor {
   position: absolute;
   bottom: 0;
-  left: -30%;
-  right: -30%;
-  height: 60%;
+  left: -40%;
+  right: -40%;
+  height: 65%;
   z-index: 2;
   transform-style: preserve-3d;
-  transform: rotateX(65deg) translateZ(-50px);
+  /* Less steep angle - more natural viewing */
+  transform: rotateX(58deg) translateZ(-40px);
   transform-origin: center top;
-  /* Checkered floor with perspective fade */
+  
+  /* ARCADE CARPET: dark base + multi-layer confetti specks */
   background:
-    /* Checkerboard pattern */
-    repeating-conic-gradient(
-      from 0deg at 50px 50px,
-      #0a0612 0deg 90deg,
-      #0f0a1a 90deg 180deg
+    /* Layer 1: Tiny cyan specks */
+    radial-gradient(circle 1px at 15% 20%, rgba(0, 200, 255, 0.4) 0%, transparent 100%),
+    radial-gradient(circle 1px at 45% 35%, rgba(0, 200, 255, 0.35) 0%, transparent 100%),
+    radial-gradient(circle 1px at 75% 25%, rgba(0, 200, 255, 0.4) 0%, transparent 100%),
+    radial-gradient(circle 1px at 25% 55%, rgba(0, 200, 255, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 60% 60%, rgba(0, 200, 255, 0.35) 0%, transparent 100%),
+    radial-gradient(circle 1px at 85% 50%, rgba(0, 200, 255, 0.3) 0%, transparent 100%),
+    /* Layer 2: Magenta/pink specks */
+    radial-gradient(circle 1px at 10% 40%, rgba(255, 50, 150, 0.35) 0%, transparent 100%),
+    radial-gradient(circle 1px at 35% 15%, rgba(255, 50, 150, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 55% 45%, rgba(255, 50, 150, 0.35) 0%, transparent 100%),
+    radial-gradient(circle 1px at 80% 35%, rgba(255, 50, 150, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 20% 70%, rgba(255, 50, 150, 0.25) 0%, transparent 100%),
+    radial-gradient(circle 1px at 70% 75%, rgba(255, 50, 150, 0.3) 0%, transparent 100%),
+    /* Layer 3: Yellow/gold specks */
+    radial-gradient(circle 1px at 30% 30%, rgba(255, 200, 50, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 50% 20%, rgba(255, 200, 50, 0.25) 0%, transparent 100%),
+    radial-gradient(circle 1px at 65% 50%, rgba(255, 200, 50, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 40% 65%, rgba(255, 200, 50, 0.25) 0%, transparent 100%),
+    /* Layer 4: Green specks */
+    radial-gradient(circle 1px at 22% 45%, rgba(50, 255, 150, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 58% 30%, rgba(50, 255, 150, 0.25) 0%, transparent 100%),
+    radial-gradient(circle 1px at 78% 60%, rgba(50, 255, 150, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 42% 80%, rgba(50, 255, 150, 0.2) 0%, transparent 100%),
+    /* Subtle diagonal noise texture */
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.008) 2px,
+      rgba(255, 255, 255, 0.008) 4px
     ),
-    /* Gradient fade to darkness at edges */
-    linear-gradient(180deg, rgba(10, 6, 18, 0) 0%, rgba(2, 1, 6, 1) 100%);
-  background-size: 100px 100px, 100% 100%;
-  background-blend-mode: normal;
-  /* Floor shine/reflection hint */
-  mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 100%);
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 100%);
+    /* Dark carpet base with slight purple tint */
+    linear-gradient(180deg, #0a0610 0%, #060408 50%, #030204 100%);
+  
+  background-size: 
+    200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px,
+    200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px,
+    200px 200px, 200px 200px, 200px 200px, 200px 200px,
+    200px 200px, 200px 200px, 200px 200px, 200px 200px,
+    8px 8px,
+    100% 100%;
+    
+  /* Subtle floor sheen - like worn carpet reflection */
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 100%);
 }
 
-/* Side vignette - darkens edges for enclosed feel */
+/* Side vignette - heavier for enclosed room feel */
 .room-vignette {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 50;
-  background: radial-gradient(
-    ellipse 80% 90% at 50% 50%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.4) 70%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
+  background: 
+    /* Corner darkness */
+    radial-gradient(
+      ellipse 75% 85% at 50% 50%,
+      transparent 25%,
+      rgba(0, 0, 0, 0.35) 60%,
+      rgba(0, 0, 0, 0.7) 85%,
+      rgba(0, 0, 0, 0.9) 100%
+    ),
+    /* Top shadow for ceiling feel */
+    linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, transparent 25%);
 }
 
-/* Floor reflections - subtle bloom from machines */
+/* Film grain overlay - subtle noise for photographic feel */
+.room-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 51;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Ambient floor reflections - light bounce from machines */
 .room-floor-reflections {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40%;
+  height: 35%;
   pointer-events: none;
   z-index: 3;
   background: 
-    /* Cyan/green glow pools */
-    radial-gradient(ellipse 15% 8% at 25% 70%, rgba(0, 255, 200, 0.08) 0%, transparent 100%),
-    radial-gradient(ellipse 15% 8% at 50% 75%, rgba(0, 255, 100, 0.1) 0%, transparent 100%),
-    radial-gradient(ellipse 15% 8% at 75% 70%, rgba(0, 255, 200, 0.08) 0%, transparent 100%),
-    /* Second row glows */
-    radial-gradient(ellipse 12% 6% at 30% 85%, rgba(0, 200, 255, 0.06) 0%, transparent 100%),
-    radial-gradient(ellipse 12% 6% at 50% 88%, rgba(0, 255, 150, 0.07) 0%, transparent 100%),
-    radial-gradient(ellipse 12% 6% at 70% 85%, rgba(0, 200, 255, 0.06) 0%, transparent 100%);
+    /* Diffuse cyan/green ambient from front row */
+    radial-gradient(ellipse 40% 15% at 50% 85%, rgba(0, 180, 150, 0.06) 0%, transparent 100%),
+    /* Wider ambient wash */
+    radial-gradient(ellipse 60% 20% at 50% 95%, rgba(50, 100, 150, 0.04) 0%, transparent 100%);
 }
 
 /* ============================================================================
-   NEON HEADER - Sign mounted on back wall
+   NEON HEADER - Sign mounted on back wall (pink for signage only)
    ============================================================================ */
 .arcade-header {
   position: relative;
   z-index: 20;
   text-align: center;
-  padding: 24px 16px 16px;
+  padding: 20px 16px 14px;
   /* Mounted on back wall feel */
   transform: translateZ(10px);
 }
 
 .arcade-title {
-  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
   font-weight: 900;
   letter-spacing: 0.12em;
   margin: 0;
-  color: #ff00ff;
+  /* Pink neon - the main accent color for signage */
+  color: #ff40ff;
   text-shadow:
-    0 0 5px #ff00ff,
-    0 0 10px #ff00ff,
-    0 0 20px #ff00ff,
-    0 0 40px #ff00ff,
-    0 0 80px rgba(255, 0, 255, 0.5);
-  animation: neon-flicker 4s infinite;
-  /* Slight depth */
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+    0 0 4px #ff40ff,
+    0 0 8px #ff40ff,
+    0 0 16px #ff40ff,
+    0 0 32px rgba(255, 64, 255, 0.6),
+    0 0 60px rgba(255, 64, 255, 0.3);
+  animation: neon-flicker 5s infinite;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
 }
 
 @keyframes neon-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    opacity: 1;
     text-shadow:
-      0 0 5px #ff00ff,
-      0 0 10px #ff00ff,
-      0 0 20px #ff00ff,
-      0 0 40px #ff00ff,
-      0 0 80px rgba(255, 0, 255, 0.5);
+      0 0 4px #ff40ff,
+      0 0 8px #ff40ff,
+      0 0 16px #ff40ff,
+      0 0 32px rgba(255, 64, 255, 0.6),
+      0 0 60px rgba(255, 64, 255, 0.3);
   }
   20%, 24%, 55% {
+    opacity: 0.85;
     text-shadow:
-      0 0 2px #ff00ff,
-      0 0 5px rgba(255, 0, 255, 0.3);
+      0 0 2px #ff40ff,
+      0 0 4px rgba(255, 64, 255, 0.4);
   }
 }
 
 .arcade-subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.35em;
-  color: #00ffff;
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  /* Cyan for secondary text */
+  color: #40e0ff;
   text-shadow: 
-    0 0 5px #00ffff,
-    0 0 15px rgba(0, 255, 255, 0.5);
-  margin-top: 6px;
-  opacity: 0.9;
+    0 0 4px #40e0ff,
+    0 0 10px rgba(64, 224, 255, 0.4);
+  margin-top: 5px;
+  opacity: 0.85;
 }
 
 /* ============================================================================
-   STATUS BAR - Marquee/counter strip feel
+   STATUS BAR - Subdued marquee strip (less neon, more ambient)
    ============================================================================ */
 .arcade-status-bar {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  padding: 10px 16px;
+  gap: 18px;
+  padding: 8px 14px;
   margin: 0 auto;
-  max-width: 500px;
+  max-width: 480px;
   position: relative;
   z-index: 25;
-  /* Marquee counter look */
+  /* Darker, more subtle */
   background: 
-    linear-gradient(180deg, rgba(20, 15, 30, 0.95) 0%, rgba(10, 8, 18, 0.98) 100%);
-  border: 1px solid rgba(255, 0, 255, 0.25);
-  border-radius: 4px;
+    linear-gradient(180deg, rgba(15, 12, 22, 0.92) 0%, rgba(8, 6, 14, 0.96) 100%);
+  border: 1px solid rgba(100, 60, 140, 0.25);
+  border-radius: 3px;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 30px rgba(255, 0, 255, 0.1);
-  /* Depth */
+    0 3px 15px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
   transform: translateZ(5px);
   flex-wrap: wrap;
 }
@@ -638,45 +772,46 @@ p {
 }
 
 .status-label {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   letter-spacing: 0.2em;
-  color: #666;
+  color: #555;
   text-transform: uppercase;
 }
 
 .status-value {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #ffff00;
-  text-shadow: 0 0 8px #ffff00;
+  /* Warmer yellow, less saturated */
+  color: #e0c040;
+  text-shadow: 0 0 6px rgba(224, 192, 64, 0.5);
   font-family: 'Courier New', monospace;
 }
 
 .status-value--active {
-  color: #00ff00;
-  text-shadow: 0 0 8px #00ff00;
+  color: #40e080;
+  text-shadow: 0 0 6px rgba(64, 224, 128, 0.5);
 }
 
 .arcade-coin-btn {
-  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 100%);
+  background: linear-gradient(180deg, #e0b020 0%, #c08010 100%);
   color: #000;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 3px;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-decoration: none;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 
-    0 2px 10px rgba(255, 215, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  transition: all 0.2s;
+    0 2px 8px rgba(200, 160, 40, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .arcade-coin-btn:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
   box-shadow: 
-    0 4px 20px rgba(255, 215, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 3px 12px rgba(200, 160, 40, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* ============================================================================
@@ -751,91 +886,69 @@ p {
 .arcade-floor-area {
   position: relative;
   z-index: 20;
-  padding: 20px 16px 60px;
-  max-width: 700px;
+  padding: 16px 16px 50px;
+  max-width: 680px;
   margin: 0 auto;
-  /* 3D staging - slight tilt into room */
+  /* Slight tilt into room - less extreme */
   transform-style: preserve-3d;
-  transform: rotateX(8deg) translateY(10px);
+  transform: rotateX(10deg) translateY(8px);
 }
 
-/* Doorway on back wall */
+/* Doorway on back wall - with warm light spill */
 .arcade-doorway {
   display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 6px;
-  margin-bottom: 30px;
-  opacity: 0.4;
-  transform: translateZ(-10px);
+  margin-bottom: 28px;
+  opacity: 0.35;
+  transform: translateZ(-15px);
 }
 
 .doorway-frame {
-  width: 8px;
-  height: 35px;
-  background: linear-gradient(180deg, #2a2a3a 0%, #1a1a28 100%);
-  border-radius: 2px 2px 0 0;
+  width: 6px;
+  height: 30px;
+  background: linear-gradient(180deg, #201820 0%, #100c10 100%);
+  border-radius: 1px 1px 0 0;
 }
 
 .doorway-sign {
-  background: rgba(255, 50, 50, 0.15);
-  color: rgba(255, 100, 100, 0.6);
-  padding: 2px 12px;
-  font-size: 0.5rem;
+  background: rgba(255, 60, 60, 0.12);
+  color: rgba(255, 90, 90, 0.55);
+  padding: 2px 10px;
+  font-size: 0.45rem;
   letter-spacing: 0.25em;
-  border: 1px solid rgba(255, 50, 50, 0.2);
-  border-radius: 2px;
-  text-shadow: 0 0 5px rgba(255, 50, 50, 0.3);
+  border: 1px solid rgba(255, 60, 60, 0.15);
+  border-radius: 1px;
+  text-shadow: 0 0 4px rgba(255, 60, 60, 0.25);
 }
 
 /* Machine rows - staged in room depth */
 .arcade-row {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin-bottom: 35px;
+  gap: 28px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
-  /* Each row recedes slightly */
   transform-style: preserve-3d;
 }
 
 .arcade-row[data-row="0"] {
-  transform: translateZ(-30px) scale(0.95);
-  margin-bottom: 45px;
+  transform: translateZ(-25px) scale(0.93);
+  margin-bottom: 40px;
 }
 
 .arcade-row[data-row="1"] {
-  transform: translateZ(0px) scale(1);
-}
-
-/* Floor glow pools under machines */
-.floor-glow-pools {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  gap: 80px;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.floor-glow-pool {
-  width: 80px;
-  height: 40px;
-  background: radial-gradient(ellipse 100% 100% at 50% 0%, rgba(0, 255, 150, 0.15) 0%, transparent 70%);
-  filter: blur(8px);
+  transform: translateZ(5px) scale(1.02);
 }
 
 /* ============================================================================
-   ARCADE MACHINE COMPONENT - Physical cabinet feel
+   ARCADE MACHINE COMPONENT - Heavier, grounded cabinets
    ============================================================================ */
 .arcade-machine {
   position: relative;
-  width: 90px;
-  height: 130px;
+  width: 95px;
+  height: 135px;
   background: none;
   border: none;
   padding: 0;
@@ -844,71 +957,125 @@ p {
   transform-style: preserve-3d;
   transform: rotateY(0deg) translateZ(0);
   transition:
-    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-    filter 0.3s ease;
+    transform 0.2s ease-out,
+    filter 0.25s ease;
 }
 
 /* Alternate cabinet angles for visual interest */
-.arcade-row[data-row="0"] .arcade-machine:nth-child(1) { transform: rotateY(4deg) translateZ(0); }
+.arcade-row[data-row="0"] .arcade-machine:nth-child(1) { transform: rotateY(3deg) translateZ(0); }
 .arcade-row[data-row="0"] .arcade-machine:nth-child(2) { transform: rotateY(0deg) translateZ(0); }
-.arcade-row[data-row="0"] .arcade-machine:nth-child(3) { transform: rotateY(-4deg) translateZ(0); }
-.arcade-row[data-row="1"] .arcade-machine:nth-child(1) { transform: rotateY(3deg) translateZ(0); }
+.arcade-row[data-row="0"] .arcade-machine:nth-child(3) { transform: rotateY(-3deg) translateZ(0); }
+.arcade-row[data-row="1"] .arcade-machine:nth-child(1) { transform: rotateY(2deg) translateZ(0); }
 .arcade-row[data-row="1"] .arcade-machine:nth-child(2) { transform: rotateY(0deg) translateZ(0); }
-.arcade-row[data-row="1"] .arcade-machine:nth-child(3) { transform: rotateY(-3deg) translateZ(0); }
+.arcade-row[data-row="1"] .arcade-machine:nth-child(3) { transform: rotateY(-2deg) translateZ(0); }
 
+/* Hover: subtle lift, no bounce */
 .arcade-machine:hover:not(:disabled) {
-  transform: rotateY(0deg) translateY(-8px) translateZ(15px) scale(1.08);
+  transform: rotateY(0deg) translateY(-5px) translateZ(10px);
   z-index: 10;
 }
 
 .arcade-machine--pressed {
-  transform: rotateY(0deg) translateY(2px) translateZ(-5px) scale(0.95) !important;
-  transition: transform 0.08s ease-out;
+  transform: rotateY(0deg) translateY(2px) translateZ(-3px) scale(0.97) !important;
+  transition: transform 0.06s ease-out;
 }
 
 .arcade-machine:disabled {
   cursor: not-allowed;
 }
 
-/* Cabinet body - heavier, more physical */
+/* ============================================================================
+   CABINET FLOOR LIGHT - Light pool cast onto floor by each machine
+   ============================================================================ */
+.machine-floor-light {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%) rotateX(60deg);
+  width: 70px;
+  height: 50px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Available machines cast cyan/green light */
+.arcade-machine--available .machine-floor-light {
+  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+    rgba(0, 200, 180, 0.25) 0%,
+    rgba(0, 180, 150, 0.15) 40%,
+    transparent 70%
+  );
+  opacity: 0.6;
+  filter: blur(6px);
+}
+
+.arcade-machine--available:hover .machine-floor-light {
+  opacity: 1;
+  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+    rgba(0, 220, 180, 0.35) 0%,
+    rgba(0, 200, 160, 0.2) 40%,
+    transparent 70%
+  );
+}
+
+/* Locked machines cast no light (or very dim) */
+.arcade-machine--locked .machine-floor-light {
+  opacity: 0;
+}
+
+/* Busy machines cast warm yellow light */
+.arcade-machine--busy .machine-floor-light {
+  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+    rgba(255, 180, 50, 0.3) 0%,
+    rgba(255, 160, 40, 0.15) 40%,
+    transparent 70%
+  );
+  opacity: 0.7;
+  filter: blur(6px);
+}
+
+/* Cabinet body - heavier, darker, more physical */
 .machine-cabinet {
   width: 100%;
   height: 100%;
   background: linear-gradient(
     180deg,
-    #2d2d40 0%,
-    #1e1e2d 30%,
-    #141420 70%,
-    #0a0a12 100%
+    #252535 0%,
+    #1a1a28 25%,
+    #12121c 60%,
+    #0a0a10 100%
   );
-  border-radius: 6px 6px 3px 3px;
+  border-radius: 5px 5px 2px 2px;
   /* Bezel depth */
-  border: 2px solid #3a3a4a;
-  border-bottom-color: #222;
-  border-right-color: #2a2a3a;
+  border: 2px solid #2a2a38;
+  border-bottom-color: #181820;
+  border-right-color: #222230;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   /* Heavy shadow for grounded feel */
   box-shadow:
-    /* Ambient shadow */
-    0 8px 25px rgba(0, 0, 0, 0.8),
-    0 15px 40px rgba(0, 0, 0, 0.5),
+    /* Ground shadow */
+    0 10px 30px rgba(0, 0, 0, 0.85),
+    0 20px 50px rgba(0, 0, 0, 0.5),
     /* Cabinet edge highlights */
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset -1px 0 0 rgba(255, 255, 255, 0.03),
-    /* Subtle inner shadow for depth */
-    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.3s ease;
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset -1px 0 0 rgba(255, 255, 255, 0.02),
+    /* Inner depth */
+    inset 0 -3px 6px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s ease;
 }
 
-/* Screen area - CRT glow */
+/* Screen area - CRT glow (green/cyan, not pink) */
 .machine-screen {
   flex: 1;
-  margin: 6px 6px 3px 6px;
-  background: linear-gradient(180deg, #001800 0%, #000a00 100%);
-  border-radius: 3px;
-  border: 2px solid #222;
+  margin: 5px 5px 3px 5px;
+  background: linear-gradient(180deg, #001510 0%, #000a08 100%);
+  border-radius: 2px;
+  border: 2px solid #1a1a20;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -917,8 +1084,8 @@ p {
   overflow: hidden;
   /* CRT screen glow */
   box-shadow:
-    inset 0 0 15px rgba(0, 255, 0, 0.15),
-    0 0 8px rgba(0, 255, 0, 0.1);
+    inset 0 0 12px rgba(0, 200, 150, 0.12),
+    0 0 6px rgba(0, 200, 150, 0.08);
 }
 
 /* Screen scanlines */
@@ -928,8 +1095,8 @@ p {
   inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    rgba(0, 0, 0, 0.15) 0px,
-    rgba(0, 0, 0, 0.15) 1px,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
     transparent 1px,
     transparent 2px
   );
@@ -937,12 +1104,12 @@ p {
   z-index: 2;
 }
 
-/* Screen phosphor flicker */
+/* Screen phosphor glow */
 .machine-screen::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0, 255, 100, 0.05) 0%, transparent 70%);
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0, 200, 120, 0.04) 0%, transparent 70%);
   pointer-events: none;
   z-index: 1;
 }
@@ -951,46 +1118,47 @@ p {
   font-size: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: #00ff00;
-  text-shadow: 0 0 6px #00ff00, 0 0 12px rgba(0, 255, 0, 0.5);
+  /* Green screen text */
+  color: #20e080;
+  text-shadow: 0 0 5px #20e080, 0 0 10px rgba(32, 224, 128, 0.4);
   text-align: center;
   padding: 4px;
   z-index: 3;
 }
 
 .machine-locked-icon {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-top: 2px;
   filter: grayscale(100%);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .machine-busy-text {
   font-size: 0.4rem;
-  color: #ffff00;
-  text-shadow: 0 0 4px #ffff00;
-  animation: blink 0.5s step-end infinite;
+  color: #e0c040;
+  text-shadow: 0 0 4px rgba(224, 192, 64, 0.6);
+  animation: blink 0.6s step-end infinite;
   margin-top: 2px;
 }
 
 /* Control panel */
 .machine-controls {
-  height: 32px;
-  background: linear-gradient(180deg, #1a1a25 0%, #101018 100%);
-  padding: 5px 8px;
+  height: 30px;
+  background: linear-gradient(180deg, #18181f 0%, #0e0e14 100%);
+  padding: 4px 7px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #2a2a3a;
+  border-top: 1px solid #252530;
 }
 
 .machine-joystick {
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(circle, #3a3a4a 0%, #1a1a25 100%);
+  width: 9px;
+  height: 9px;
+  background: radial-gradient(circle, #333340 0%, #1a1a22 100%);
   border-radius: 50%;
-  border: 1px solid #4a4a5a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  border: 1px solid #404050;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .machine-buttons {
@@ -999,28 +1167,28 @@ p {
 }
 
 .machine-btn {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .machine-btn--red {
-  background: radial-gradient(circle at 30% 30%, #ff5555, #aa0000);
+  background: radial-gradient(circle at 30% 30%, #e04040, #901010);
 }
 
 .machine-btn--blue {
-  background: radial-gradient(circle at 30% 30%, #5555ff, #0000aa);
+  background: radial-gradient(circle at 30% 30%, #4040e0, #101090);
 }
 
-/* Glow effect - light spill from cabinet */
+/* Glow effect - cabinet light halo */
 .machine-glow {
   position: absolute;
-  inset: -15px;
-  border-radius: 12px;
+  inset: -12px;
+  border-radius: 10px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
   pointer-events: none;
   z-index: -1;
 }
@@ -1029,68 +1197,68 @@ p {
    MACHINE STATES
    ============================================================================ */
 
-/* Available - gentle screen glow pulse */
+/* Available - subtle idle pulse (no bounce) */
 .arcade-machine--available {
-  animation: available-idle 4s ease-in-out infinite;
+  animation: available-idle 5s ease-in-out infinite;
 }
 
 @keyframes available-idle {
   0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.08); }
+  50% { filter: brightness(1.05); }
 }
 
 .arcade-machine--available .machine-glow {
-  background: radial-gradient(ellipse 100% 120% at 50% 30%, rgba(0, 255, 200, 0.25) 0%, transparent 60%);
-  opacity: 0.4;
-  animation: glow-pulse 4s ease-in-out infinite;
+  background: radial-gradient(ellipse 100% 110% at 50% 40%, rgba(0, 180, 160, 0.2) 0%, transparent 55%);
+  opacity: 0.35;
+  animation: glow-pulse 5s ease-in-out infinite;
 }
 
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.45; }
 }
 
 .arcade-machine--available:hover .machine-glow {
-  opacity: 1;
+  opacity: 0.8;
   animation: none;
-  background: radial-gradient(ellipse 100% 120% at 50% 30%, rgba(0, 255, 200, 0.4) 0%, transparent 60%);
+  background: radial-gradient(ellipse 100% 110% at 50% 40%, rgba(0, 200, 170, 0.3) 0%, transparent 55%);
 }
 
 .arcade-machine--available:hover .machine-screen {
   box-shadow:
-    inset 0 0 25px rgba(0, 255, 0, 0.4),
-    0 0 20px rgba(0, 255, 0, 0.3),
-    0 0 40px rgba(0, 255, 0, 0.15);
+    inset 0 0 18px rgba(0, 200, 150, 0.3),
+    0 0 12px rgba(0, 200, 150, 0.2),
+    0 0 25px rgba(0, 200, 150, 0.1);
 }
 
 .arcade-machine--available:hover .machine-title {
   text-shadow: 
-    0 0 8px #00ff00, 
-    0 0 16px #00ff00, 
-    0 0 24px rgba(0, 255, 0, 0.5);
+    0 0 6px #20e080, 
+    0 0 12px #20e080, 
+    0 0 18px rgba(32, 224, 128, 0.4);
 }
 
 .arcade-machine--available:hover .machine-cabinet {
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.9),
-    0 20px 50px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 30px rgba(0, 255, 200, 0.15);
+    0 25px 55px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 20px rgba(0, 180, 150, 0.1);
 }
 
-/* Locked - dim, static, no life */
+/* Locked - very dim, static, dead */
 .arcade-machine--locked {
-  opacity: 0.35;
-  filter: saturate(0.15) brightness(0.6);
+  opacity: 0.3;
+  filter: saturate(0.1) brightness(0.5);
 }
 
 .arcade-machine--locked .machine-screen {
-  background: linear-gradient(180deg, #100808 0%, #080404 100%);
+  background: linear-gradient(180deg, #0a0606 0%, #050303 100%);
   box-shadow: none;
 }
 
 .arcade-machine--locked .machine-title {
-  color: #444;
+  color: #333;
   text-shadow: none;
 }
 
@@ -1104,40 +1272,42 @@ p {
 }
 
 .arcade-machine--busy .machine-glow {
-  background: radial-gradient(ellipse 100% 120% at 50% 30%, rgba(255, 200, 0, 0.35) 0%, transparent 60%);
+  background: radial-gradient(ellipse 100% 110% at 50% 40%, rgba(255, 180, 50, 0.28) 0%, transparent 55%);
   opacity: 1;
-  animation: busy-breathe 2s ease-in-out infinite;
+  animation: busy-breathe 2.5s ease-in-out infinite;
 }
 
 @keyframes busy-breathe {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.9; }
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.75; }
 }
 
 .arcade-machine--busy .machine-screen {
-  background: linear-gradient(180deg, #181800 0%, #0c0c00 100%);
-  box-shadow: inset 0 0 20px rgba(255, 200, 0, 0.2);
+  background: linear-gradient(180deg, #141005 0%, #0a0803 100%);
+  box-shadow: inset 0 0 15px rgba(255, 180, 50, 0.15);
 }
 
 .arcade-machine--busy .machine-title {
-  color: #ffcc00;
-  text-shadow: 0 0 8px #ffcc00;
+  color: #e0b030;
+  text-shadow: 0 0 6px rgba(224, 176, 48, 0.6);
 }
 
 /* ============================================================================
-   RESPONSIVE - Mobile adjustments
+   RESPONSIVE - Mobile adjustments (performance-focused)
    ============================================================================ */
 @media (max-width: 600px) {
   .arcade-room {
-    perspective: 800px;
+    perspective: 700px;
+    perspective-origin: 50% 48%;
   }
 
   .arcade-floor-area {
-    transform: rotateX(5deg) translateY(5px);
+    transform: rotateX(6deg) translateY(4px);
+    padding: 12px 12px 40px;
   }
 
   .arcade-row {
-    gap: 16px;
+    gap: 14px;
   }
 
   .arcade-row[data-row="0"],
@@ -1146,8 +1316,8 @@ p {
   }
 
   .arcade-machine {
-    width: 75px;
-    height: 110px;
+    width: 78px;
+    height: 115px;
   }
 
   /* Disable rotation on mobile for performance */
@@ -1156,7 +1326,7 @@ p {
   }
 
   .arcade-machine:hover:not(:disabled) {
-    transform: translateY(-6px) scale(1.06) !important;
+    transform: translateY(-4px) !important;
   }
 
   .machine-title {
@@ -1164,22 +1334,62 @@ p {
   }
 
   .arcade-status-bar {
-    gap: 12px;
-    padding: 8px 12px;
+    gap: 10px;
+    padding: 6px 10px;
   }
 
   /* Simplify shadows on mobile */
   .machine-cabinet {
     box-shadow:
-      0 6px 15px rgba(0, 0, 0, 0.7),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      0 6px 18px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
+  /* Simplify floor light on mobile */
+  .machine-floor-light {
+    filter: blur(4px);
+    opacity: 0.4 !important;
+  }
+
+  .arcade-machine--available:hover .machine-floor-light {
+    opacity: 0.6 !important;
+  }
+
+  /* Simpler vignette on mobile */
   .room-vignette {
     background: radial-gradient(
-      ellipse 90% 100% at 50% 50%,
-      transparent 40%,
-      rgba(0, 0, 0, 0.5) 100%
+      ellipse 85% 95% at 50% 50%,
+      transparent 35%,
+      rgba(0, 0, 0, 0.6) 100%
     );
+  }
+
+  /* Hide grain on mobile for perf */
+  .room-grain {
+    display: none;
+  }
+
+  /* Simplify wall elements */
+  .wall-poster {
+    display: none;
+  }
+
+  .wall-trim {
+    opacity: 0.5;
+  }
+
+  /* Reduce carpet complexity on mobile */
+  .room-floor {
+    background:
+      /* Fewer specks */
+      radial-gradient(circle 1px at 25% 30%, rgba(0, 200, 255, 0.3) 0%, transparent 100%),
+      radial-gradient(circle 1px at 75% 40%, rgba(255, 50, 150, 0.3) 0%, transparent 100%),
+      radial-gradient(circle 1px at 50% 60%, rgba(255, 200, 50, 0.25) 0%, transparent 100%),
+      radial-gradient(circle 1px at 35% 75%, rgba(50, 255, 150, 0.25) 0%, transparent 100%),
+      /* Dark base */
+      linear-gradient(180deg, #0a0610 0%, #060408 50%, #030204 100%);
+    background-size: 
+      150px 150px, 150px 150px, 150px 150px, 150px 150px,
+      100% 100%;
   }
 }

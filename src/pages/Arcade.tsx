@@ -168,9 +168,20 @@ export default function Arcade() {
   return (
     <div className={`arcade-room${sceneReady ? ' arcade-room--entered' : ''}`}>
       {/* Room structure */}
-      <div className="room-back-wall" />
+      <div className="room-back-wall">
+        {/* Wall trim stripe */}
+        <div className="wall-trim" />
+        {/* Decorative posters/panels */}
+        <div className="wall-poster wall-poster--1" />
+        <div className="wall-poster wall-poster--2" />
+        <div className="wall-poster wall-poster--3" />
+        {/* Doorway warm light spill */}
+        <div className="wall-door-glow" />
+      </div>
       <div className="room-floor" />
       <div className="room-vignette" />
+      {/* Film grain overlay */}
+      <div className="room-grain" />
 
       {/* Neon sign on back wall */}
       <header className="arcade-header">
@@ -231,13 +242,6 @@ export default function Arcade() {
             ))}
           </div>
         ))}
-
-        {/* Floor glow pools from machines */}
-        <div className="floor-glow-pools">
-          <div className="floor-glow-pool" />
-          <div className="floor-glow-pool" />
-          <div className="floor-glow-pool" />
-        </div>
       </div>
 
       {/* Ambient floor reflections */}

@@ -26,7 +26,11 @@ export default function ArcadeMachine({ gameId, title, status, onClick }: Arcade
       disabled={!isClickable}
       aria-label={`${title} - ${status === 'available' ? 'Click to play' : status === 'busy' ? 'Starting...' : 'Unavailable'}`}
       data-game-id={gameId}
+      data-status={status}
     >
+      {/* Floor light pool from this cabinet */}
+      <div className="machine-floor-light" />
+      
       {/* Cabinet body */}
       <div className="machine-cabinet">
         {/* Screen area */}
