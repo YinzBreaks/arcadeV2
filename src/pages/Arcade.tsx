@@ -91,6 +91,8 @@ export default function Arcade() {
       if (!res.ok || !data.ok || !data.playToken) {
         if (data.error === 'INSUFFICIENT_CREDITS') {
           setError('Not enough credits. Buy more at the Coin Machine!');
+        } else if (data.error === 'ACTIVE_SESSION_EXISTS') {
+          setError('You are already playing a game.');
         } else {
           setError(data.error || `Request failed (${res.status})`);
         }

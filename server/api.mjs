@@ -117,10 +117,20 @@ app.post('/play/start', async (req, reply) => {
     return reply.code(400).send({ ok: false, error: 'gameId is required.' });
   }
 
-  const wallet = getWallet(db, userId);
+  // ENFORCE: User can only have ONE active play session at a time
   const now = new Date();
+  const nowIso = now.toISOString();
+  const existingSession = db
+    .prepare('SELECT 1 FROM play_sessions WHERE user_id = ? AND expires_at > ? LIMIT 1')
+    .get(userId, nowIso);
+
+  if (existingSession) {
+    return reply.code(409).send({ ok: false, error: 'ACTIVE_SESSION_EXISTS' });
+  }
+
+  const wallet = getWallet(db, userId);
   const expiresAt = new Date(now.getTime() + PLAY_SESSION_DURATION_SECONDS * 1000).toISOString();
-  const createdAt = now.toISOString();
+  const createdAt = nowIso;
 
   // Determine play mode and authorize atomically
   let mode;
