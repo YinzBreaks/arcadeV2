@@ -40,6 +40,7 @@ export default function Arcade() {
     passExpiresAt: string | null;
   } | null>(null);
   const [sceneReady, setSceneReady] = React.useState(false);
+  const [prizeToast, setPrizeToast] = React.useState(false);
 
   // Trigger entrance animation after mount
   React.useEffect(() => {
@@ -99,6 +100,18 @@ export default function Arcade() {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  // Clear prize toast after timeout
+  React.useEffect(() => {
+    if (prizeToast) {
+      const timer = setTimeout(() => setPrizeToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [prizeToast]);
+
+  function handlePrizeCounter() {
+    setPrizeToast(true);
+  }
 
   async function startGame(gameId: string) {
     setError(null);
@@ -219,6 +232,14 @@ export default function Arcade() {
         </div>
       )}
 
+      {/* Prize counter toast */}
+      {prizeToast && (
+        <div className="arcade-toast arcade-toast--info">
+          <span className="arcade-toast-icon">🎁</span>
+          <span>Prize redemption coming soon!</span>
+        </div>
+      )}
+
       {/* Room floor with machines */}
       <div className="arcade-floor-area">
         {/* Back wall doorway hint */}
@@ -227,6 +248,23 @@ export default function Arcade() {
           <div className="doorway-sign">EXIT</div>
           <div className="doorway-frame doorway-frame--right" />
         </div>
+
+        {/* Coin Machine fixture - near entrance */}
+        <button
+          className="fixture coin-machine"
+          onClick={() => navigate('/kiosk')}
+          aria-label="Buy tokens at the coin machine"
+        >
+          <div className="fixture-body">
+            <div className="fixture-marquee">CHANGE</div>
+            <div className="coin-machine-display">
+              <span className="coin-machine-icon">🪙</span>
+            </div>
+            <div className="coin-machine-slot" />
+            <div className="coin-machine-dispenser" />
+          </div>
+          <div className="fixture-floor-light" />
+        </button>
 
         {/* Machine rows on floor */}
         {ARCADE_ROWS.map((row, rowIndex) => (
@@ -242,6 +280,29 @@ export default function Arcade() {
             ))}
           </div>
         ))}
+
+        {/* Prize Counter fixture - bottom right corner */}
+        <button
+          className="fixture prize-counter"
+          onClick={handlePrizeCounter}
+          aria-label="Prize counter - coming soon"
+        >
+          <div className="fixture-body">
+            <div className="fixture-marquee">PRIZES</div>
+            <div className="prize-counter-display">
+              <div className="prize-shelf prize-shelf--1">
+                <span className="prize-item">🧸</span>
+                <span className="prize-item">🎮</span>
+              </div>
+              <div className="prize-shelf prize-shelf--2">
+                <span className="prize-item">🎪</span>
+                <span className="prize-item">⭐</span>
+              </div>
+            </div>
+            <div className="prize-counter-window" />
+          </div>
+          <div className="fixture-floor-light fixture-floor-light--warm" />
+        </button>
       </div>
 
       {/* Ambient floor reflections */}
