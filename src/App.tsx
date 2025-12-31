@@ -3,6 +3,7 @@ import Arcade from './pages/Arcade';
 import Auth from './pages/Auth';
 import Kiosk from './pages/Kiosk';
 import Play from './pages/Play';
+import ResetPassword from './pages/ResetPassword';
 
 function Home() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/arcade" element={<Arcade />} />
       <Route path="/kiosk" element={<Kiosk />} />
       <Route path="/play/:gameId" element={<Play />} />
