@@ -16,5 +16,8 @@ export function getEnv() {
     fulfillOnEvents,
     supabaseUrl: process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '',
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+    // Dev auth bypass (NEVER enabled in production)
+    devAuthBypass: process.env.DEV_AUTH_BYPASS === '1',
+    devUserId: process.env.DEV_USER_ID || 'dev_user',
   };
 }

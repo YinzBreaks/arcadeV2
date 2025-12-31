@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RUNTIME } from '../config/runtime';
+import { addAuthHeaders, isDevAuthBypassEnabled } from '../lib/devAuth';
 import { supabase } from '../lib/supabase';
 
 type Sku = 'CREDITS_10' | 'CREDITS_50' | 'PASS_60_MIN';
@@ -39,6 +40,12 @@ export default function Kiosk() {
   } | null>(null);
 
   React.useEffect(() => {
+    // Dev bypass: skip Supabase auth check
+    if (isDevAuthBypassEnabled()) {
+      setAuthLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
@@ -62,10 +69,9 @@ export default function Kiosk() {
   }, [navigate]);
 
   const refreshWallet = React.useCallback(async () => {
-    if (!session?.access_token) return;
     try {
       const res = await fetch(`${RUNTIME.apiBaseUrl}/wallet/me`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: addAuthHeaders({}, session?.access_token),
       });
       const data = await res.json();
       if (res.ok && data.ok) setWallet(data.wallet);
@@ -75,22 +81,21 @@ export default function Kiosk() {
   }, [session?.access_token]);
 
   React.useEffect(() => {
-    if (session?.access_token) {
+    if (session?.access_token || isDevAuthBypassEnabled()) {
       refreshWallet();
     }
   }, [session?.access_token, refreshWallet]);
 
   async function startCheckout(sku: Sku) {
-    if (!session?.access_token) return;
     setError(null);
     setBusySku(sku);
     try {
       const res = await fetch(`${RUNTIME.apiBaseUrl}/commerce/create-charge`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: addAuthHeaders(
+          { 'Content-Type': 'application/json' },
+          session?.access_token,
+        ),
         body: JSON.stringify({ sku }),
       });
 
@@ -106,7 +111,9 @@ export default function Kiosk() {
   }
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
+    if (!isDevAuthBypassEnabled()) {
+      await supabase.auth.signOut();
+    }
   }
 
   if (authLoading) {
@@ -117,14 +124,18 @@ export default function Kiosk() {
     );
   }
 
-  if (!session) {
+  if (!session && !isDevAuthBypassEnabled()) {
     return null; // Will redirect via useEffect
   }
 
   return (
     <div className="page">
       <h2>Coin Machine</h2>
-      <p className="muted">Signed in as: {session.user.email}</p>
+      <p className="muted">
+        {isDevAuthBypassEnabled()
+          ? 'DEV MODE - Auth bypass active'
+          : `Signed in as: ${session?.user.email}`}
+      </p>
 
       <div className="card">
         <div>

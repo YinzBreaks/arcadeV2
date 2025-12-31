@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ArcadeMachine, { type MachineStatus } from '../components/ArcadeMachine';
 import { RUNTIME } from '../config/runtime';
+import { addAuthHeaders, isDevAuthBypassEnabled } from '../lib/devAuth';
 import { supabase } from '../lib/supabase';
 
 interface Game {
@@ -47,6 +48,12 @@ export default function Arcade() {
   }, []);
 
   React.useEffect(() => {
+    // Dev bypass: skip Supabase auth check
+    if (isDevAuthBypassEnabled()) {
+      setAuthLoading(false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setAuthLoading(false);
@@ -68,10 +75,9 @@ export default function Arcade() {
   }, [navigate]);
 
   const refreshWallet = React.useCallback(async () => {
-    if (!session?.access_token) return;
     try {
       const res = await fetch(`${RUNTIME.apiBaseUrl}/wallet/me`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: addAuthHeaders({}, session?.access_token),
       });
       const data = await res.json();
       if (res.ok && data.ok) setWallet(data.wallet);
@@ -81,7 +87,7 @@ export default function Arcade() {
   }, [session?.access_token]);
 
   React.useEffect(() => {
-    if (session?.access_token) {
+    if (session?.access_token || isDevAuthBypassEnabled()) {
       refreshWallet();
     }
   }, [session?.access_token, refreshWallet]);
@@ -95,7 +101,6 @@ export default function Arcade() {
   }, [error]);
 
   async function startGame(gameId: string) {
-    if (!session?.access_token) return;
     setError(null);
     setLockedReason(null);
     setBusyGame(gameId);
@@ -103,10 +108,10 @@ export default function Arcade() {
     try {
       const res = await fetch(`${RUNTIME.apiBaseUrl}/play/start`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers: addAuthHeaders(
+          { 'Content-Type': 'application/json' },
+          session?.access_token,
+        ),
         body: JSON.stringify({ gameId }),
       });
 
@@ -155,7 +160,7 @@ export default function Arcade() {
     );
   }
 
-  if (!session) {
+  if (!session && !isDevAuthBypassEnabled()) {
     return null;
   }
 

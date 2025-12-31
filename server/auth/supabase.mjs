@@ -57,6 +57,7 @@ export function extractBearerToken(req) {
 
 /**
  * Authenticates a request using Supabase JWT.
+ * In dev mode with DEV_AUTH_BYPASS=1, falls back to x-dev-user-id header.
  * Returns the user ID or sends a 401 response.
  *
  * @param {import('fastify').FastifyRequest} req - Fastify request object
@@ -64,19 +65,33 @@ export function extractBearerToken(req) {
  * @returns {Promise<string | null>} - User ID or null (response already sent)
  */
 export async function authenticateRequest(req, reply) {
+  const env = getEnv();
   const token = extractBearerToken(req);
 
-  if (!token) {
-    reply.code(401).send({ ok: false, error: 'Missing or invalid Authorization header.' });
-    return null;
+  // Try Supabase JWT first
+  if (token) {
+    const result = await verifySupabaseToken(token);
+    if (result) {
+      return result.userId;
+    }
   }
 
-  const result = await verifySupabaseToken(token);
-
-  if (!result) {
-    reply.code(401).send({ ok: false, error: 'Invalid or expired token.' });
-    return null;
+  // Dev auth bypass fallback (NEVER in production)
+  if (
+    env.devAuthBypass &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    const devUserId = req.headers['x-dev-user-id'];
+    if (typeof devUserId === 'string' && devUserId.trim()) {
+      req.log.warn({ devUserId }, 'DEV AUTH BYPASS ACTIVE - Using x-dev-user-id header');
+      return devUserId.trim();
+    }
+    // Fallback to default dev user
+    req.log.warn({ devUserId: env.devUserId }, 'DEV AUTH BYPASS ACTIVE - Using default DEV_USER_ID');
+    return env.devUserId;
   }
 
-  return result.userId;
+  // No valid auth
+  reply.code(401).send({ ok: false, error: 'Missing or invalid Authorization header.' });
+  return null;
 }

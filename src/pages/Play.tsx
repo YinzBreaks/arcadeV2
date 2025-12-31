@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { RUNTIME } from '../config/runtime';
+import { addAuthHeaders, isDevAuthBypassEnabled } from '../lib/devAuth';
+import { supabase } from '../lib/supabase';
 
 interface VerifyResponse {
   ok: boolean;
@@ -118,16 +119,19 @@ export default function Play() {
       // Optionally request early session end from server
       // This is a coordination signal, not authoritative - TTL remains fallback
       try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const accessToken = sessionData?.session?.access_token;
+        let accessToken: string | undefined;
+        if (!isDevAuthBypassEnabled()) {
+          const { data: sessionData } = await supabase.auth.getSession();
+          accessToken = sessionData?.session?.access_token;
+        }
 
-        if (accessToken && token) {
+        if (token && (accessToken || isDevAuthBypassEnabled())) {
           await fetch(`${RUNTIME.apiBaseUrl}/play/end`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
-            },
+            headers: addAuthHeaders(
+              { 'Content-Type': 'application/json' },
+              accessToken,
+            ),
             body: JSON.stringify({ playToken: token }),
           });
           // Response is intentionally ignored - this is optional coordination
