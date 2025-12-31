@@ -36,8 +36,15 @@ export default function Play() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [gameEnded, setGameEnded] = React.useState(false);
+  const [sceneReady, setSceneReady] = React.useState(false);
 
   const token = searchParams.get('token');
+
+  // Trigger entrance animation after mount
+  React.useEffect(() => {
+    const timer = requestAnimationFrame(() => setSceneReady(true));
+    return () => cancelAnimationFrame(timer);
+  }, []);
 
   // Verify play token on mount
   React.useEffect(() => {
@@ -137,7 +144,7 @@ export default function Play() {
 
   if (loading) {
     return (
-      <div className="page">
+      <div className={`page play-page-transition${sceneReady ? ' play-page-transition--entered' : ''}`}>
         <h2>Verifying...</h2>
         <p className="muted">Checking your play token...</p>
       </div>
@@ -146,7 +153,7 @@ export default function Play() {
 
   if (error || !verified) {
     return (
-      <div className="page">
+      <div className={`page play-page-transition${sceneReady ? ' play-page-transition--entered' : ''}`}>
         <h2>Cannot Play</h2>
         {error && <div className="error">{error}</div>}
         <button className="btn" onClick={() => navigate('/arcade')} style={{ marginTop: '16px' }}>
@@ -159,7 +166,8 @@ export default function Play() {
   // Game ended - show thanks screen and navigate back
   if (gameEnded) {
     return (
-      <div className="page">
+      <div className="page play-page-ended">
+        <div className="play-ended-glow" />
         <h2>Thanks for Playing!</h2>
         <p className="muted">Your session has ended.</p>
         <button className="btn" onClick={() => navigate('/arcade')} style={{ marginTop: '16px' }}>
@@ -174,7 +182,7 @@ export default function Play() {
   const gameUrl = `/games/${gameId}/index.html`;
 
   return (
-    <div className="page play-page">
+    <div className={`page play-page${sceneReady ? ' play-page--entered' : ''}`}>
       <div className="play-header">
         <h2>Now Playing: {gameId}</h2>
         <button className="btn btn-signout" onClick={() => navigate('/arcade')}>

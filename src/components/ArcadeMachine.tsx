@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type MachineStatus = 'available' | 'locked' | 'busy';
 
 interface ArcadeMachineProps {
@@ -9,11 +11,18 @@ interface ArcadeMachineProps {
 
 export default function ArcadeMachine({ gameId, title, status, onClick }: ArcadeMachineProps) {
   const isClickable = status === 'available';
+  const [pressed, setPressed] = React.useState(false);
+
+  function handleClick() {
+    if (!isClickable) return;
+    setPressed(true);
+    onClick();
+  }
 
   return (
     <button
-      className={`arcade-machine arcade-machine--${status}`}
-      onClick={isClickable ? onClick : undefined}
+      className={`arcade-machine arcade-machine--${status}${pressed ? ' arcade-machine--pressed' : ''}`}
+      onClick={handleClick}
       disabled={!isClickable}
       aria-label={`${title} - ${status === 'available' ? 'Click to play' : status === 'busy' ? 'Starting...' : 'Unavailable'}`}
       data-game-id={gameId}

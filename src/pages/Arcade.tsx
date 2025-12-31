@@ -38,6 +38,13 @@ export default function Arcade() {
     credits: number;
     passExpiresAt: string | null;
   } | null>(null);
+  const [sceneReady, setSceneReady] = React.useState(false);
+
+  // Trigger entrance animation after mount
+  React.useEffect(() => {
+    const timer = requestAnimationFrame(() => setSceneReady(true));
+    return () => cancelAnimationFrame(timer);
+  }, []);
 
   React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -155,7 +162,7 @@ export default function Arcade() {
   const hasPass = wallet?.passExpiresAt && new Date(wallet.passExpiresAt) > new Date();
 
   return (
-    <div className="arcade-floor">
+    <div className={`arcade-floor${sceneReady ? ' arcade-floor--entered' : ''}`}>
       {/* Neon sign header */}
       <header className="arcade-header">
         <h1 className="arcade-title">RESISTANCE ARCADE</h1>
