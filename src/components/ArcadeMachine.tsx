@@ -55,6 +55,9 @@ export default function ArcadeMachine({
 
       {/* Cabinet body */}
       <div className="machine-cabinet">
+        {/* Cabinet frame SVG overlay - detailed 3D appearance */}
+        <div className="cabinet-frame-overlay" />
+
         {/* Side art overlays - left */}
         {art?.sideLeft && (
           <div

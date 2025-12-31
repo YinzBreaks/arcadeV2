@@ -1183,6 +1183,21 @@ p {
   transition: box-shadow 0.2s ease;
 }
 
+/* Cabinet frame SVG overlay - adds 3D depth and detail */
+.cabinet-frame-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/cabinet_frame.svg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 15;
+  opacity: 0.65;
+  mix-blend-mode: overlay;
+  border-radius: 5px 5px 2px 2px;
+}
+
 /* Screen area - CRT glow (green/cyan, not pink) */
 .machine-screen {
   flex: 1;
