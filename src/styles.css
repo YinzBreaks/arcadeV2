@@ -475,7 +475,7 @@ p {
   left: -10%;
   right: -10%;
   height: 50%;
-  background: 
+  background:
     /* Subtle vertical panel texture */
     repeating-linear-gradient(
       90deg,
@@ -486,14 +486,20 @@ p {
     ),
     /* Horizontal bands */
     repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 60px,
-      rgba(80, 50, 100, 0.02) 60px,
-      rgba(80, 50, 100, 0.02) 62px
-    ),
+        0deg,
+        transparent 0px,
+        transparent 60px,
+        rgba(80, 50, 100, 0.02) 60px,
+        rgba(80, 50, 100, 0.02) 62px
+      ),
     /* Main gradient - dark indigo, lighter purple center for ambient bounce */
-    radial-gradient(ellipse 100% 120% at 50% 120%, #1a0a28 0%, #0c0614 35%, #050208 70%, #010104 100%);
+    radial-gradient(
+        ellipse 100% 120% at 50% 120%,
+        #1a0a28 0%,
+        #0c0614 35%,
+        #050208 70%,
+        #010104 100%
+      );
   z-index: 1;
   transform-style: preserve-3d;
   transform: rotateX(1deg) translateZ(-30px);
@@ -506,14 +512,15 @@ p {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
     rgba(150, 50, 180, 0.4) 15%,
     rgba(180, 80, 200, 0.6) 50%,
     rgba(150, 50, 180, 0.4) 85%,
     transparent 100%
   );
-  box-shadow: 
+  box-shadow:
     0 0 15px rgba(150, 50, 180, 0.5),
     0 0 30px rgba(150, 50, 180, 0.3);
 }
@@ -532,7 +539,7 @@ p {
   height: 50px;
   background: linear-gradient(180deg, #1a1025 0%, #0d0810 100%);
   border: 1px solid rgba(100, 60, 120, 0.3);
-  box-shadow: 
+  box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.5),
     inset 0 0 15px rgba(80, 200, 255, 0.05);
 }
@@ -544,7 +551,7 @@ p {
   height: 42px;
   background: linear-gradient(180deg, #15101a 0%, #0a0610 100%);
   border: 1px solid rgba(120, 80, 140, 0.25);
-  box-shadow: 
+  box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.5),
     inset 0 0 12px rgba(255, 100, 150, 0.04);
 }
@@ -567,8 +574,9 @@ p {
   transform: translateX(-50%);
   width: 80px;
   height: 100px;
-  background: radial-gradient(ellipse 100% 100% at 50% 100%, 
-    rgba(255, 200, 120, 0.08) 0%, 
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 100%,
+    rgba(255, 200, 120, 0.08) 0%,
     rgba(255, 180, 100, 0.04) 40%,
     transparent 70%
   );
@@ -587,7 +595,7 @@ p {
   /* Less steep angle - more natural viewing */
   transform: rotateX(58deg) translateZ(-40px);
   transform-origin: center top;
-  
+
   /* ARCADE CARPET: dark base + multi-layer confetti specks */
   background:
     /* Layer 1: Tiny cyan specks */
@@ -616,26 +624,42 @@ p {
     radial-gradient(circle 1px at 42% 80%, rgba(50, 255, 150, 0.2) 0%, transparent 100%),
     /* Subtle diagonal noise texture */
     repeating-linear-gradient(
-      -45deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(255, 255, 255, 0.008) 2px,
-      rgba(255, 255, 255, 0.008) 4px
-    ),
+        -45deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(255, 255, 255, 0.008) 2px,
+        rgba(255, 255, 255, 0.008) 4px
+      ),
     /* Dark carpet base with slight purple tint */
     linear-gradient(180deg, #0a0610 0%, #060408 50%, #030204 100%);
-  
-  background-size: 
-    200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px,
-    200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px,
-    200px 200px, 200px 200px, 200px 200px, 200px 200px,
-    200px 200px, 200px 200px, 200px 200px, 200px 200px,
+
+  background-size:
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
     8px 8px,
     100% 100%;
-    
+
   /* Subtle floor sheen - like worn carpet reflection */
-  mask-image: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 100%);
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 100%);
 }
 
 /* Side vignette - heavier for enclosed room feel */
@@ -644,7 +668,7 @@ p {
   inset: 0;
   pointer-events: none;
   z-index: 50;
-  background: 
+  background:
     /* Corner darkness */
     radial-gradient(
       ellipse 75% 85% at 50% 50%,
@@ -676,7 +700,7 @@ p {
   height: 35%;
   pointer-events: none;
   z-index: 3;
-  background: 
+  background:
     /* Diffuse cyan/green ambient from front row */
     radial-gradient(ellipse 40% 15% at 50% 85%, rgba(0, 180, 150, 0.06) 0%, transparent 100%),
     /* Wider ambient wash */
@@ -713,7 +737,13 @@ p {
 }
 
 @keyframes neon-flicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+  0%,
+  18%,
+  22%,
+  25%,
+  53%,
+  57%,
+  100% {
     opacity: 1;
     text-shadow:
       0 0 4px #ff40ff,
@@ -722,7 +752,9 @@ p {
       0 0 32px rgba(255, 64, 255, 0.6),
       0 0 60px rgba(255, 64, 255, 0.3);
   }
-  20%, 24%, 55% {
+  20%,
+  24%,
+  55% {
     opacity: 0.85;
     text-shadow:
       0 0 2px #ff40ff,
@@ -735,7 +767,7 @@ p {
   letter-spacing: 0.4em;
   /* Cyan for secondary text */
   color: #40e0ff;
-  text-shadow: 
+  text-shadow:
     0 0 4px #40e0ff,
     0 0 10px rgba(64, 224, 255, 0.4);
   margin-top: 5px;
@@ -756,8 +788,7 @@ p {
   position: relative;
   z-index: 25;
   /* Darker, more subtle */
-  background: 
-    linear-gradient(180deg, rgba(15, 12, 22, 0.92) 0%, rgba(8, 6, 14, 0.96) 100%);
+  background: linear-gradient(180deg, rgba(15, 12, 22, 0.92) 0%, rgba(8, 6, 14, 0.96) 100%);
   border: 1px solid rgba(100, 60, 140, 0.25);
   border-radius: 3px;
   box-shadow:
@@ -804,15 +835,17 @@ p {
   font-size: 0.75rem;
   text-decoration: none;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 
+  box-shadow:
     0 2px 8px rgba(200, 160, 40, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .arcade-coin-btn:hover {
   transform: scale(1.03);
-  box-shadow: 
+  box-shadow:
     0 3px 12px rgba(200, 160, 40, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -834,7 +867,7 @@ p {
   gap: 10px;
   z-index: 100;
   animation: toast-in 0.3s ease-out;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.6),
     0 0 30px rgba(255, 68, 68, 0.3);
 }
@@ -875,12 +908,16 @@ p {
 .arcade-loading-text {
   font-size: 1.4rem;
   color: #00ffff;
-  text-shadow: 0 0 10px #00ffff, 0 0 30px rgba(0, 255, 255, 0.5);
+  text-shadow:
+    0 0 10px #00ffff,
+    0 0 30px rgba(0, 255, 255, 0.5);
   animation: blink 1s step-end infinite;
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* ============================================================================
@@ -936,12 +973,12 @@ p {
   transform-style: preserve-3d;
 }
 
-.arcade-row[data-row="0"] {
+.arcade-row[data-row='0'] {
   transform: translateZ(-25px) scale(0.93);
   margin-bottom: 40px;
 }
 
-.arcade-row[data-row="1"] {
+.arcade-row[data-row='1'] {
   transform: translateZ(5px) scale(1.02);
 }
 
@@ -965,12 +1002,24 @@ p {
 }
 
 /* Alternate cabinet angles for visual interest */
-.arcade-row[data-row="0"] .arcade-machine:nth-child(1) { transform: rotateY(3deg) translateZ(0); }
-.arcade-row[data-row="0"] .arcade-machine:nth-child(2) { transform: rotateY(0deg) translateZ(0); }
-.arcade-row[data-row="0"] .arcade-machine:nth-child(3) { transform: rotateY(-3deg) translateZ(0); }
-.arcade-row[data-row="1"] .arcade-machine:nth-child(1) { transform: rotateY(2deg) translateZ(0); }
-.arcade-row[data-row="1"] .arcade-machine:nth-child(2) { transform: rotateY(0deg) translateZ(0); }
-.arcade-row[data-row="1"] .arcade-machine:nth-child(3) { transform: rotateY(-2deg) translateZ(0); }
+.arcade-row[data-row='0'] .arcade-machine:nth-child(1) {
+  transform: rotateY(3deg) translateZ(0);
+}
+.arcade-row[data-row='0'] .arcade-machine:nth-child(2) {
+  transform: rotateY(0deg) translateZ(0);
+}
+.arcade-row[data-row='0'] .arcade-machine:nth-child(3) {
+  transform: rotateY(-3deg) translateZ(0);
+}
+.arcade-row[data-row='1'] .arcade-machine:nth-child(1) {
+  transform: rotateY(2deg) translateZ(0);
+}
+.arcade-row[data-row='1'] .arcade-machine:nth-child(2) {
+  transform: rotateY(0deg) translateZ(0);
+}
+.arcade-row[data-row='1'] .arcade-machine:nth-child(3) {
+  transform: rotateY(-2deg) translateZ(0);
+}
 
 /* Hover: subtle lift, no bounce */
 .arcade-machine:hover:not(:disabled) {
@@ -1006,7 +1055,8 @@ p {
 
 /* Available machines cast cyan/green light */
 .arcade-machine--available .machine-floor-light {
-  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 20%,
     rgba(0, 200, 180, 0.25) 0%,
     rgba(0, 180, 150, 0.15) 40%,
     transparent 70%
@@ -1017,7 +1067,8 @@ p {
 
 .arcade-machine--available:hover .machine-floor-light {
   opacity: 1;
-  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 20%,
     rgba(0, 220, 180, 0.35) 0%,
     rgba(0, 200, 160, 0.2) 40%,
     transparent 70%
@@ -1031,7 +1082,8 @@ p {
 
 /* Busy machines cast warm yellow light */
 .arcade-machine--busy .machine-floor-light {
-  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 20%,
     rgba(255, 180, 50, 0.3) 0%,
     rgba(255, 160, 40, 0.15) 40%,
     transparent 70%
@@ -1042,15 +1094,10 @@ p {
 
 /* Cabinet body - heavier, darker, more physical */
 .machine-cabinet {
+  position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    180deg,
-    #252535 0%,
-    #1a1a28 25%,
-    #12121c 60%,
-    #0a0a10 100%
-  );
+  background: linear-gradient(180deg, #252535 0%, #1a1a28 25%, #12121c 60%, #0a0a10 100%);
   border-radius: 5px 5px 2px 2px;
   /* Bezel depth */
   border: 2px solid #2a2a38;
@@ -1064,11 +1111,9 @@ p {
     /* Ground shadow */
     0 10px 30px rgba(0, 0, 0, 0.85),
     0 20px 50px rgba(0, 0, 0, 0.5),
-    /* Cabinet edge highlights */
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    /* Cabinet edge highlights */ inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset -1px 0 0 rgba(255, 255, 255, 0.02),
-    /* Inner depth */
-    inset 0 -3px 6px rgba(0, 0, 0, 0.4);
+    /* Inner depth */ inset 0 -3px 6px rgba(0, 0, 0, 0.4);
   transition: box-shadow 0.2s ease;
 }
 
@@ -1112,7 +1157,11 @@ p {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0, 200, 120, 0.04) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    rgba(0, 200, 120, 0.04) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: 1;
 }
@@ -1123,7 +1172,9 @@ p {
   letter-spacing: 0.1em;
   /* Green screen text */
   color: #20e080;
-  text-shadow: 0 0 5px #20e080, 0 0 10px rgba(32, 224, 128, 0.4);
+  text-shadow:
+    0 0 5px #20e080,
+    0 0 10px rgba(32, 224, 128, 0.4);
   text-align: center;
   padding: 4px;
   z-index: 3;
@@ -1185,6 +1236,138 @@ p {
   background: radial-gradient(circle at 30% 30%, #4040e0, #101090);
 }
 
+/* ============================================================================
+   CABINET ART OVERLAYS
+   ============================================================================ */
+
+/* Marquee area - the lit header area */
+.machine-marquee {
+  height: 24px;
+  margin: 4px 5px 0 5px;
+  background: linear-gradient(180deg, #1a1a25 0%, #0e0e14 100%);
+  border-radius: 2px 2px 0 0;
+  border: 1px solid #2a2a38;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  /* Backlit marquee glow */
+  box-shadow:
+    inset 0 2px 8px rgba(255, 255, 255, 0.04),
+    0 0 6px rgba(100, 200, 255, 0.05);
+}
+
+/* Marquee title fallback when no art */
+.marquee-title {
+  font-size: 0.38rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d0e0ff;
+  text-shadow:
+    0 0 4px rgba(180, 220, 255, 0.6),
+    0 0 8px rgba(100, 180, 255, 0.3);
+  z-index: 1;
+}
+
+/* Marquee art image (when provided) */
+.marquee-art {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Slight backlit effect */
+  filter: brightness(1.1) saturate(1.15);
+  pointer-events: none;
+}
+
+/* Side art overlays - positioned on cabinet edges */
+.cabinet-side-art {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 1;
+  /* Subtle depth - side art is slightly recessed */
+  filter: brightness(0.7) saturate(0.9);
+}
+
+.cabinet-side-art--left {
+  left: 0;
+  border-radius: 5px 0 0 2px;
+  /* Perspective - left side darker */
+  mask-image: linear-gradient(to right, rgba(0,0,0,0.4), rgba(0,0,0,0.9));
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.4), rgba(0,0,0,0.9));
+}
+
+.cabinet-side-art--right {
+  right: 0;
+  border-radius: 0 5px 2px 0;
+  /* Perspective - right side more visible */
+  mask-image: linear-gradient(to left, rgba(0,0,0,0.6), rgba(0,0,0,0.95));
+  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.6), rgba(0,0,0,0.95));
+}
+
+/* Wear overlay - scratches, grime, age */
+.cabinet-wear-overlay {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: overlay;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 5px 5px 2px 2px;
+}
+
+/* Default wear texture (CSS-only, no image required) */
+.cabinet-wear-default {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+  border-radius: 5px 5px 2px 2px;
+  /* Subtle scratches and wear pattern */
+  background-image:
+    /* Edge wear */
+    linear-gradient(135deg, rgba(0,0,0,0.15) 0%, transparent 3%, transparent 97%, rgba(0,0,0,0.1) 100%),
+    /* Random dust/scuff marks */
+    radial-gradient(ellipse 2px 1px at 15% 25%, rgba(0,0,0,0.08), transparent),
+    radial-gradient(ellipse 3px 2px at 82% 67%, rgba(0,0,0,0.06), transparent),
+    radial-gradient(ellipse 1px 2px at 45% 85%, rgba(0,0,0,0.07), transparent),
+    radial-gradient(ellipse 2px 1px at 68% 12%, rgba(0,0,0,0.05), transparent);
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+/* Cabinet accent color custom property fallback */
+.arcade-machine {
+  --cabinet-accent: #4080ff;
+}
+
+/* Accent strip on cabinet - shows accent color */
+.machine-cabinet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5px;
+  right: 5px;
+  height: 2px;
+  background: var(--cabinet-accent);
+  opacity: 0.4;
+  z-index: 5;
+  border-radius: 1px;
+}
+
 /* Glow effect - cabinet light halo */
 .machine-glow {
   position: absolute;
@@ -1206,25 +1389,43 @@ p {
 }
 
 @keyframes available-idle {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.05); }
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.05);
+  }
 }
 
 .arcade-machine--available .machine-glow {
-  background: radial-gradient(ellipse 100% 110% at 50% 40%, rgba(0, 180, 160, 0.2) 0%, transparent 55%);
+  background: radial-gradient(
+    ellipse 100% 110% at 50% 40%,
+    rgba(0, 180, 160, 0.2) 0%,
+    transparent 55%
+  );
   opacity: 0.35;
   animation: glow-pulse 5s ease-in-out infinite;
 }
 
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.45; }
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
 
 .arcade-machine--available:hover .machine-glow {
   opacity: 0.8;
   animation: none;
-  background: radial-gradient(ellipse 100% 110% at 50% 40%, rgba(0, 200, 170, 0.3) 0%, transparent 55%);
+  background: radial-gradient(
+    ellipse 100% 110% at 50% 40%,
+    rgba(0, 200, 170, 0.3) 0%,
+    transparent 55%
+  );
 }
 
 .arcade-machine--available:hover .machine-screen {
@@ -1235,9 +1436,9 @@ p {
 }
 
 .arcade-machine--available:hover .machine-title {
-  text-shadow: 
-    0 0 6px #20e080, 
-    0 0 12px #20e080, 
+  text-shadow:
+    0 0 6px #20e080,
+    0 0 12px #20e080,
     0 0 18px rgba(32, 224, 128, 0.4);
 }
 
@@ -1275,14 +1476,23 @@ p {
 }
 
 .arcade-machine--busy .machine-glow {
-  background: radial-gradient(ellipse 100% 110% at 50% 40%, rgba(255, 180, 50, 0.28) 0%, transparent 55%);
+  background: radial-gradient(
+    ellipse 100% 110% at 50% 40%,
+    rgba(255, 180, 50, 0.28) 0%,
+    transparent 55%
+  );
   opacity: 1;
   animation: busy-breathe 2.5s ease-in-out infinite;
 }
 
 @keyframes busy-breathe {
-  0%, 100% { opacity: 0.45; }
-  50% { opacity: 0.75; }
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.75;
+  }
 }
 
 .arcade-machine--busy .machine-screen {
@@ -1307,7 +1517,9 @@ p {
   padding: 0;
   cursor: pointer;
   transform-style: preserve-3d;
-  transition: transform 0.2s ease-out, filter 0.2s ease;
+  transition:
+    transform 0.2s ease-out,
+    filter 0.2s ease;
   z-index: 15;
 }
 
@@ -1320,13 +1532,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(
-    180deg,
-    #2a2838 0%,
-    #1e1c28 30%,
-    #141218 70%,
-    #0c0a10 100%
-  );
+  background: linear-gradient(180deg, #2a2838 0%, #1e1c28 30%, #141218 70%, #0c0a10 100%);
   border-radius: 4px 4px 2px 2px;
   border: 2px solid #3a3848;
   border-bottom-color: #1a1820;
@@ -1361,7 +1567,8 @@ p {
   border-radius: 50%;
   pointer-events: none;
   z-index: -1;
-  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 20%,
     rgba(0, 180, 200, 0.22) 0%,
     rgba(0, 160, 180, 0.1) 40%,
     transparent 70%
@@ -1372,7 +1579,8 @@ p {
 }
 
 .fixture-floor-light--warm {
-  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 20%,
     rgba(255, 200, 100, 0.2) 0%,
     rgba(255, 180, 80, 0.1) 40%,
     transparent 70%
@@ -1420,8 +1628,13 @@ p {
 }
 
 @keyframes coin-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .coin-machine-slot {
@@ -1441,7 +1654,7 @@ p {
   border: 1px solid #2a2a30;
   border-radius: 0 0 3px 3px;
   margin-bottom: 4px;
-  box-shadow: 
+  box-shadow:
     inset 0 -2px 4px rgba(0, 0, 0, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.4);
 }
@@ -1464,7 +1677,9 @@ p {
 }
 
 .coin-machine:hover .fixture-marquee {
-  text-shadow: 0 0 10px rgba(64, 224, 255, 0.8), 0 0 20px rgba(64, 224, 255, 0.4);
+  text-shadow:
+    0 0 10px rgba(64, 224, 255, 0.8),
+    0 0 20px rgba(64, 224, 255, 0.4);
 }
 
 .coin-machine:hover .coin-machine-icon {
@@ -1550,7 +1765,9 @@ p {
 }
 
 .prize-counter:hover .fixture-marquee {
-  text-shadow: 0 0 10px rgba(255, 128, 192, 0.8), 0 0 20px rgba(255, 128, 192, 0.4);
+  text-shadow:
+    0 0 10px rgba(255, 128, 192, 0.8),
+    0 0 20px rgba(255, 128, 192, 0.4);
 }
 
 /* ============================================================================
@@ -1559,7 +1776,7 @@ p {
 .arcade-toast--info {
   background: rgba(20, 30, 40, 0.95);
   border-color: #40a0c0;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.6),
     0 0 30px rgba(64, 160, 192, 0.2);
 }
@@ -1582,8 +1799,8 @@ p {
     gap: 14px;
   }
 
-  .arcade-row[data-row="0"],
-  .arcade-row[data-row="1"] {
+  .arcade-row[data-row='0'],
+  .arcade-row[data-row='1'] {
     transform: none;
   }
 
@@ -1658,10 +1875,12 @@ p {
       radial-gradient(circle 1px at 75% 40%, rgba(255, 50, 150, 0.3) 0%, transparent 100%),
       radial-gradient(circle 1px at 50% 60%, rgba(255, 200, 50, 0.25) 0%, transparent 100%),
       radial-gradient(circle 1px at 35% 75%, rgba(50, 255, 150, 0.25) 0%, transparent 100%),
-      /* Dark base */
-      linear-gradient(180deg, #0a0610 0%, #060408 50%, #030204 100%);
-    background-size: 
-      150px 150px, 150px 150px, 150px 150px, 150px 150px,
+      /* Dark base */ linear-gradient(180deg, #0a0610 0%, #060408 50%, #030204 100%);
+    background-size:
+      150px 150px,
+      150px 150px,
+      150px 150px,
+      150px 150px,
       100% 100%;
   }
 
