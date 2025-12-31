@@ -128,10 +128,7 @@ export default function Play() {
         if (token && (accessToken || isDevAuthBypassEnabled())) {
           await fetch(`${RUNTIME.apiBaseUrl}/play/end`, {
             method: 'POST',
-            headers: addAuthHeaders(
-              { 'Content-Type': 'application/json' },
-              accessToken,
-            ),
+            headers: addAuthHeaders({ 'Content-Type': 'application/json' }, accessToken),
             body: JSON.stringify({ playToken: token }),
           });
           // Response is intentionally ignored - this is optional coordination
@@ -148,7 +145,9 @@ export default function Play() {
 
   if (loading) {
     return (
-      <div className={`page play-page-transition${sceneReady ? ' play-page-transition--entered' : ''}`}>
+      <div
+        className={`page play-page-transition${sceneReady ? ' play-page-transition--entered' : ''}`}
+      >
         <h2>Verifying...</h2>
         <p className="muted">Checking your play token...</p>
       </div>
@@ -157,7 +156,9 @@ export default function Play() {
 
   if (error || !verified) {
     return (
-      <div className={`page play-page-transition${sceneReady ? ' play-page-transition--entered' : ''}`}>
+      <div
+        className={`page play-page-transition${sceneReady ? ' play-page-transition--entered' : ''}`}
+      >
         <h2>Cannot Play</h2>
         {error && <div className="error">{error}</div>}
         <button className="btn" onClick={() => navigate('/arcade')} style={{ marginTop: '16px' }}>

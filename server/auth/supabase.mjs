@@ -77,17 +77,17 @@ export async function authenticateRequest(req, reply) {
   }
 
   // Dev auth bypass fallback (NEVER in production)
-  if (
-    env.devAuthBypass &&
-    process.env.NODE_ENV !== 'production'
-  ) {
+  if (env.devAuthBypass && process.env.NODE_ENV !== 'production') {
     const devUserId = req.headers['x-dev-user-id'];
     if (typeof devUserId === 'string' && devUserId.trim()) {
       req.log.warn({ devUserId }, 'DEV AUTH BYPASS ACTIVE - Using x-dev-user-id header');
       return devUserId.trim();
     }
     // Fallback to default dev user
-    req.log.warn({ devUserId: env.devUserId }, 'DEV AUTH BYPASS ACTIVE - Using default DEV_USER_ID');
+    req.log.warn(
+      { devUserId: env.devUserId },
+      'DEV AUTH BYPASS ACTIVE - Using default DEV_USER_ID',
+    );
     return env.devUserId;
   }
 

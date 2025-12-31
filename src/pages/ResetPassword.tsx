@@ -18,28 +18,48 @@ export default function ResetPassword() {
   const [checking, setChecking] = React.useState(true);
   const [hasSession, setHasSession] = React.useState(false);
 
+  const redirectTimeoutRef = React.useRef<number | null>(null);
+
   // On mount, check if we have a recovery session
   React.useEffect(() => {
-    // Supabase handles the recovery token from the URL automatically
-    // and creates a session when the page loads
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setHasSession(true);
-      }
-      setChecking(false);
-    });
+    let isMounted = true;
 
-    // Listen for auth state changes (recovery token processing)
+    // Supabase may establish the session async after page load,
+    // so we do BOTH: an immediate getSession() check AND an auth state listener.
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        if (!isMounted) return;
+        if (session) {
+          setHasSession(true);
+        }
+        setChecking(false);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setChecking(false);
+      });
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' && session) {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Do not rely on a specific event name (PASSWORD_RECOVERY vs SIGNED_IN etc).
+      // If Supabase establishes a session while on this page, we can proceed.
+      if (!isMounted) return;
+      if (session) {
         setHasSession(true);
         setChecking(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+      if (redirectTimeoutRef.current) {
+        window.clearTimeout(redirectTimeoutRef.current);
+        redirectTimeoutRef.current = null;
+      }
+    };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -76,7 +96,7 @@ export default function ResetPassword() {
       } else {
         setSuccess(true);
         // Auto-redirect after success
-        setTimeout(() => {
+        redirectTimeoutRef.current = window.setTimeout(() => {
           navigate(POST_RESET_REDIRECT, { replace: true });
         }, 2000);
       }
@@ -103,27 +123,11 @@ export default function ResetPassword() {
         <div className="auth-container">
           <h2 className="auth-title">Invalid or Expired Link</h2>
           <p className="muted auth-subtitle">
-            This password reset link is invalid or has expired. Please request a new one.
+            This password reset link is invalid or has expired. Please request a new reset link.
           </p>
-          <button
-            className="btn auth-btn-full auth-btn-primary"
-            onClick={() => navigate('/auth', { replace: true })}
-          >
+          <button className="btn" onClick={() => navigate('/auth', { replace: true })}>
             Back to Sign In
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <div className="page auth-page">
-        <div className="auth-container">
-          <h2 className="auth-title">Password Updated</h2>
-          <div className="auth-success">
-            Your password has been successfully updated. Redirecting...
-          </div>
         </div>
       </div>
     );
@@ -132,58 +136,41 @@ export default function ResetPassword() {
   return (
     <div className="page auth-page">
       <div className="auth-container">
-        <h2 className="auth-title">Set New Password</h2>
-        <p className="muted auth-subtitle">
-          Enter your new password below. It must be at least {MIN_PASSWORD_LENGTH} characters.
-        </p>
-
-        {error && <div className="error">{error}</div>}
+        <h2 className="auth-title">Reset Password</h2>
+        <p className="muted auth-subtitle">Choose a new password for your account.</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="auth-field">
-            <label htmlFor="password">New Password</label>
+          <label className="auth-label">
+            New Password
             <input
-              id="password"
+              className="auth-input"
               type="password"
-              autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={submitting}
-              placeholder={`Minimum ${MIN_PASSWORD_LENGTH} characters`}
-            />
-          </div>
-
-          <div className="auth-field">
-            <label htmlFor="confirmPassword">Confirm New Password</label>
-            <input
-              id="confirmPassword"
-              type="password"
               autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={submitting}
-              placeholder="Re-enter new password"
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={submitting || success}
             />
-          </div>
+          </label>
 
-          <button
-            type="submit"
-            className="btn auth-btn-full auth-btn-primary"
-            disabled={submitting}
-          >
-            {submitting ? 'Updating...' : 'Update Password'}
+          <label className="auth-label">
+            Confirm New Password
+            <input
+              className="auth-input"
+              type="password"
+              value={confirmPassword}
+              autoComplete="new-password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={submitting || success}
+            />
+          </label>
+
+          {error && <div className="error">{error}</div>}
+          {success && <div className="card">Password updated! Redirecting…</div>}
+
+          <button className="btn" type="submit" disabled={submitting || success}>
+            {submitting ? 'Updating…' : 'Update Password'}
           </button>
         </form>
-
-        <div className="auth-links">
-          <button
-            type="button"
-            className="auth-link"
-            onClick={() => navigate('/auth', { replace: true })}
-          >
-            Back to Sign In
-          </button>
-        </div>
       </div>
     </div>
   );

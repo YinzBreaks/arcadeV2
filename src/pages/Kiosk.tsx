@@ -92,10 +92,7 @@ export default function Kiosk() {
     try {
       const res = await fetch(`${RUNTIME.apiBaseUrl}/commerce/create-charge`, {
         method: 'POST',
-        headers: addAuthHeaders(
-          { 'Content-Type': 'application/json' },
-          session?.access_token,
-        ),
+        headers: addAuthHeaders({ 'Content-Type': 'application/json' }, session?.access_token),
         body: JSON.stringify({ sku }),
       });
 

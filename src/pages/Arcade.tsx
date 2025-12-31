@@ -108,10 +108,7 @@ export default function Arcade() {
     try {
       const res = await fetch(`${RUNTIME.apiBaseUrl}/play/start`, {
         method: 'POST',
-        headers: addAuthHeaders(
-          { 'Content-Type': 'application/json' },
-          session?.access_token,
-        ),
+        headers: addAuthHeaders({ 'Content-Type': 'application/json' }, session?.access_token),
         body: JSON.stringify({ gameId }),
       });
 
@@ -152,7 +149,9 @@ export default function Arcade() {
 
   if (authLoading) {
     return (
-      <div className="arcade-floor">
+      <div className="arcade-room">
+        <div className="room-back-wall" />
+        <div className="room-floor" />
         <div className="arcade-loading">
           <div className="arcade-loading-text">LOADING...</div>
         </div>
@@ -167,14 +166,19 @@ export default function Arcade() {
   const hasPass = wallet?.passExpiresAt && new Date(wallet.passExpiresAt) > new Date();
 
   return (
-    <div className={`arcade-floor${sceneReady ? ' arcade-floor--entered' : ''}`}>
-      {/* Neon sign header */}
+    <div className={`arcade-room${sceneReady ? ' arcade-room--entered' : ''}`}>
+      {/* Room structure */}
+      <div className="room-back-wall" />
+      <div className="room-floor" />
+      <div className="room-vignette" />
+
+      {/* Neon sign on back wall */}
       <header className="arcade-header">
         <h1 className="arcade-title">RESISTANCE ARCADE</h1>
         <div className="arcade-subtitle">INSERT COIN TO PLAY</div>
       </header>
 
-      {/* Status bar */}
+      {/* Status bar - marquee counter strip */}
       <div className="arcade-status-bar">
         <div className="status-item">
           <span className="status-label">CREDITS</span>
@@ -204,18 +208,18 @@ export default function Arcade() {
         </div>
       )}
 
-      {/* Arcade floor with machines */}
+      {/* Room floor with machines */}
       <div className="arcade-floor-area">
-        {/* Decorative entrance */}
-        <div className="arcade-entrance">
-          <div className="entrance-door entrance-door--left" />
-          <div className="entrance-mat">ENTER</div>
-          <div className="entrance-door entrance-door--right" />
+        {/* Back wall doorway hint */}
+        <div className="arcade-doorway">
+          <div className="doorway-frame doorway-frame--left" />
+          <div className="doorway-sign">EXIT</div>
+          <div className="doorway-frame doorway-frame--right" />
         </div>
 
-        {/* Machine rows */}
+        {/* Machine rows on floor */}
         {ARCADE_ROWS.map((row, rowIndex) => (
-          <div className="arcade-row" key={rowIndex}>
+          <div className="arcade-row" key={rowIndex} data-row={rowIndex}>
             {row.map((game) => (
               <ArcadeMachine
                 key={game.id}
@@ -228,21 +232,16 @@ export default function Arcade() {
           </div>
         ))}
 
-        {/* Decorative elements */}
-        <div className="arcade-decorations">
-          <div className="arcade-deco arcade-deco--prize">
-            <span className="deco-icon">🏆</span>
-            <span className="deco-label">PRIZES</span>
-          </div>
-          <div className="arcade-deco arcade-deco--change">
-            <span className="deco-icon">💰</span>
-            <span className="deco-label">CHANGE</span>
-          </div>
+        {/* Floor glow pools from machines */}
+        <div className="floor-glow-pools">
+          <div className="floor-glow-pool" />
+          <div className="floor-glow-pool" />
+          <div className="floor-glow-pool" />
         </div>
       </div>
 
-      {/* Floor pattern overlay */}
-      <div className="arcade-floor-pattern" />
+      {/* Ambient floor reflections */}
+      <div className="room-floor-reflections" />
     </div>
   );
 }

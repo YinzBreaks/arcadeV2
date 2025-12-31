@@ -200,13 +200,17 @@ export default function Auth() {
       }
 
       // Always show success message - prevents enumeration
-      setSuccess("If an account can be created, you'll receive an email shortly. Please check your inbox.");
+      setSuccess(
+        "If an account can be created, you'll receive an email shortly. Please check your inbox.",
+      );
       setEmail('');
       setPassword('');
       setConfirmPassword('');
     } catch {
       // Still show success to prevent enumeration
-      setSuccess("If an account can be created, you'll receive an email shortly. Please check your inbox.");
+      setSuccess(
+        "If an account can be created, you'll receive an email shortly. Please check your inbox.",
+      );
     } finally {
       setSubmitting(false);
     }

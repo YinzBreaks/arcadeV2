@@ -25,10 +25,7 @@ export function getDevUserId(): string {
  * - If dev bypass enabled: adds x-dev-user-id
  * - Otherwise: expects caller to add Authorization: Bearer token
  */
-export function addAuthHeaders(
-  headers: HeadersInit = {},
-  accessToken?: string,
-): HeadersInit {
+export function addAuthHeaders(headers: HeadersInit = {}, accessToken?: string): HeadersInit {
   const result = { ...headers } as Record<string, string>;
 
   if (DEV_BYPASS_ENABLED) {
