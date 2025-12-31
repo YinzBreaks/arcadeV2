@@ -566,6 +566,35 @@ p {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
+/* Additional wall posters for atmosphere */
+.wall-poster--4 {
+  bottom: 35%;
+  left: 12%;
+  width: 40px;
+  height: 55px;
+  background: linear-gradient(180deg, #0d0815 0%, #060308 100%);
+  border: 1px solid rgba(80, 50, 100, 0.25);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 0 10px rgba(200, 150, 255, 0.03);
+  /* Fake game poster pattern */
+  background-image:
+    linear-gradient(180deg, rgba(100, 60, 150, 0.1) 0%, transparent 30%),
+    linear-gradient(180deg, #0d0815 0%, #060308 100%);
+}
+
+.wall-poster--5 {
+  bottom: 32%;
+  right: 14%;
+  width: 32px;
+  height: 48px;
+  background: linear-gradient(180deg, #100a18 0%, #050308 100%);
+  border: 1px solid rgba(90, 60, 110, 0.22);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    inset 0 0 8px rgba(255, 180, 100, 0.02);
+}
+
 /* Doorway warm light spill - like light from another room */
 .wall-door-glow {
   position: absolute;
@@ -921,17 +950,54 @@ p {
 }
 
 /* ============================================================================
-   ARCADE FLOOR AREA - Where machines sit
+   ARCADE FLOOR AREA - CSS Grid layout for room positioning
    ============================================================================ */
 .arcade-floor-area {
   position: relative;
   z-index: 20;
   padding: 16px 16px 50px;
-  max-width: 680px;
+  max-width: 720px;
   margin: 0 auto;
   /* Slight tilt into room - less extreme */
   transform-style: preserve-3d;
   transform: rotateX(10deg) translateY(8px);
+  
+  /* CSS Grid for room layout */
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  grid-template-rows: auto auto auto auto;
+  grid-template-areas:
+    "left-side   doorway     right-side"
+    "coin-area   row-back    poster-area"
+    "left-fill   row-front   prize-area"
+    "floor-left  floor-mid   floor-right";
+  gap: 20px 12px;
+  align-items: start;
+}
+
+/* Grid area assignments */
+.arcade-doorway {
+  grid-area: doorway;
+  justify-self: center;
+}
+
+.arcade-row[data-row='0'] {
+  grid-area: row-back;
+}
+
+.arcade-row[data-row='1'] {
+  grid-area: row-front;
+}
+
+.coin-machine {
+  grid-area: coin-area;
+  justify-self: center;
+}
+
+.prize-counter {
+  grid-area: prize-area;
+  justify-self: center;
+  align-self: end;
 }
 
 /* Doorway on back wall - with warm light spill */
@@ -940,9 +1006,9 @@ p {
   justify-content: center;
   align-items: flex-end;
   gap: 6px;
-  margin-bottom: 28px;
   opacity: 0.35;
   transform: translateZ(-15px);
+  margin-bottom: 8px;
 }
 
 .doorway-frame {
@@ -967,19 +1033,19 @@ p {
 .arcade-row {
   display: flex;
   justify-content: center;
-  gap: 28px;
-  margin-bottom: 32px;
+  gap: 24px;
   flex-wrap: wrap;
   transform-style: preserve-3d;
 }
 
 .arcade-row[data-row='0'] {
-  transform: translateZ(-25px) scale(0.93);
-  margin-bottom: 40px;
+  transform: translateZ(-25px) scale(0.91);
+  /* Back row slightly smaller/further */
 }
 
 .arcade-row[data-row='1'] {
   transform: translateZ(5px) scale(1.02);
+  margin-top: 8px;
 }
 
 /* ============================================================================
@@ -1511,7 +1577,7 @@ p {
 
 /* Base fixture styles */
 .fixture {
-  position: absolute;
+  position: relative;
   background: none;
   border: none;
   padding: 0;
@@ -1591,9 +1657,8 @@ p {
    COIN MACHINE
    ============================================================================ */
 .coin-machine {
-  top: 8px;
-  right: 12%;
-  transform: translateZ(-20px) scale(0.9);
+  position: relative;
+  transform: translateZ(-18px) scale(0.88);
 }
 
 .coin-machine .fixture-body {
@@ -1661,7 +1726,7 @@ p {
 
 /* Coin machine hover */
 .coin-machine:hover {
-  transform: translateZ(-15px) scale(0.93);
+  transform: translateZ(-12px) scale(0.91);
 }
 
 .coin-machine:hover .fixture-body {
@@ -1688,16 +1753,15 @@ p {
 
 /* Coin machine active/pressed */
 .coin-machine:active {
-  transform: translateZ(-25px) scale(0.88);
+  transform: translateZ(-22px) scale(0.85);
 }
 
 /* ============================================================================
    PRIZE COUNTER
    ============================================================================ */
 .prize-counter {
-  bottom: 5px;
-  right: 8%;
-  transform: translateZ(10px) scale(0.95);
+  position: relative;
+  transform: translateZ(8px) scale(0.92);
 }
 
 .prize-counter .fixture-body {
@@ -1749,7 +1813,7 @@ p {
 
 /* Prize counter hover - subtle since it's non-functional */
 .prize-counter:hover {
-  transform: translateZ(12px) scale(0.97);
+  transform: translateZ(10px) scale(0.95);
 }
 
 .prize-counter:hover .fixture-body {
@@ -1792,11 +1856,15 @@ p {
 
   .arcade-floor-area {
     transform: rotateX(6deg) translateY(4px);
-    padding: 12px 12px 40px;
+    padding: 12px 8px 40px;
+    /* Simplified grid for mobile - stack vertically */
+    grid-template-columns: 60px 1fr 60px;
+    grid-template-rows: auto auto auto auto;
+    gap: 14px 8px;
   }
 
   .arcade-row {
-    gap: 14px;
+    gap: 12px;
   }
 
   .arcade-row[data-row='0'],
@@ -1886,33 +1954,31 @@ p {
 
   /* Fixtures responsive */
   .coin-machine {
-    top: 5px;
-    right: 5%;
-    transform: translateZ(-15px) scale(0.75);
+    transform: translateZ(-10px) scale(0.72);
+    justify-self: center;
   }
 
   .coin-machine .fixture-body {
-    width: 55px;
-    height: 80px;
+    width: 52px;
+    height: 75px;
   }
 
   .coin-machine:hover {
-    transform: translateZ(-12px) scale(0.78);
+    transform: translateZ(-8px) scale(0.75);
   }
 
   .prize-counter {
-    bottom: 0;
-    right: 3%;
-    transform: translateZ(5px) scale(0.8);
+    transform: translateZ(4px) scale(0.78);
+    justify-self: center;
   }
 
   .prize-counter .fixture-body {
-    width: 70px;
-    height: 62px;
+    width: 68px;
+    height: 58px;
   }
 
   .prize-counter:hover {
-    transform: translateZ(6px) scale(0.82);
+    transform: translateZ(5px) scale(0.8);
   }
 
   /* Simplify fixture floor lights on mobile */

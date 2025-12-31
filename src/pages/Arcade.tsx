@@ -188,6 +188,8 @@ export default function Arcade() {
         <div className="wall-poster wall-poster--1" />
         <div className="wall-poster wall-poster--2" />
         <div className="wall-poster wall-poster--3" />
+        <div className="wall-poster wall-poster--4" />
+        <div className="wall-poster wall-poster--5" />
         {/* Doorway warm light spill */}
         <div className="wall-door-glow" />
       </div>
