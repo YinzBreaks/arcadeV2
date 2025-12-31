@@ -1,12 +1,16 @@
 import { randomUUID } from 'node:crypto';
 
 export function ensureWallet(db, userId) {
-  db.prepare('INSERT OR IGNORE INTO wallets (user_id, credits, pass_expires_at) VALUES (?, 0, NULL)').run(userId);
+  db.prepare(
+    'INSERT OR IGNORE INTO wallets (user_id, credits, pass_expires_at) VALUES (?, 0, NULL)',
+  ).run(userId);
 }
 
 export function getWallet(db, userId) {
   ensureWallet(db, userId);
-  return db.prepare('SELECT user_id, credits, pass_expires_at FROM wallets WHERE user_id = ?').get(userId);
+  return db
+    .prepare('SELECT user_id, credits, pass_expires_at FROM wallets WHERE user_id = ?')
+    .get(userId);
 }
 
 /**
@@ -28,7 +32,9 @@ export function hasActivePass(wallet) {
  */
 export function consumeCredit(db, userId) {
   ensureWallet(db, userId);
-  const result = db.prepare('UPDATE wallets SET credits = credits - 1 WHERE user_id = ? AND credits >= 1').run(userId);
+  const result = db
+    .prepare('UPDATE wallets SET credits = credits - 1 WHERE user_id = ? AND credits >= 1')
+    .run(userId);
   return result.changes > 0;
 }
 
@@ -59,13 +65,18 @@ export function grantForSku(db, userId, sku, catalogItem, meta) {
 
   // Apply credits
   if (deltaCredits > 0) {
-    db.prepare('UPDATE wallets SET credits = credits + ? WHERE user_id = ?').run(deltaCredits, userId);
+    db.prepare('UPDATE wallets SET credits = credits + ? WHERE user_id = ?').run(
+      deltaCredits,
+      userId,
+    );
   }
 
   // Apply pass
   if (catalogItem.passMinutes && Number(catalogItem.passMinutes) > 0) {
     const minutes = Number(catalogItem.passMinutes);
-    const current = db.prepare('SELECT pass_expires_at FROM wallets WHERE user_id = ?').get(userId)?.pass_expires_at;
+    const current = db
+      .prepare('SELECT pass_expires_at FROM wallets WHERE user_id = ?')
+      .get(userId)?.pass_expires_at;
     const base = current ? new Date(current) : new Date();
     const start = base > new Date() ? base : new Date();
     const expires = new Date(start.getTime() + minutes * 60_000).toISOString();

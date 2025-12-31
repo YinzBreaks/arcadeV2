@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { RUNTIME } from '../config/runtime';
 
 interface VerifyResponse {
@@ -10,6 +11,22 @@ interface VerifyResponse {
   error?: string;
 }
 
+interface GameOverMessage {
+  type: 'GAME_OVER';
+  gameId: string;
+  reason: 'completed' | 'quit';
+}
+
+function isValidGameOverMessage(data: unknown): data is GameOverMessage {
+  if (typeof data !== 'object' || data === null) return false;
+  const msg = data as Record<string, unknown>;
+  return (
+    msg.type === 'GAME_OVER' &&
+    typeof msg.gameId === 'string' &&
+    (msg.reason === 'completed' || msg.reason === 'quit')
+  );
+}
+
 export default function Play() {
   const { gameId } = useParams<{ gameId: string }>();
   const [searchParams] = useSearchParams();
@@ -18,9 +35,11 @@ export default function Play() {
   const [verified, setVerified] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [gameEnded, setGameEnded] = React.useState(false);
 
   const token = searchParams.get('token');
 
+  // Verify play token on mount
   React.useEffect(() => {
     async function verifyToken() {
       if (!token) {
@@ -65,6 +84,57 @@ export default function Play() {
     verifyToken();
   }, [token, gameId]);
 
+  // Listen for GAME_OVER postMessage from iframe
+  React.useEffect(() => {
+    if (!verified || !token || !gameId) return;
+
+    async function handleMessage(event: MessageEvent) {
+      // Security: Only accept same-origin messages
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      // Validate message shape
+      if (!isValidGameOverMessage(event.data)) {
+        return;
+      }
+
+      // Validate gameId matches route param
+      if (event.data.gameId !== gameId) {
+        return;
+      }
+
+      // Prevent duplicate handling
+      if (gameEnded) return;
+      setGameEnded(true);
+
+      // Optionally request early session end from server
+      // This is a coordination signal, not authoritative - TTL remains fallback
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+
+        if (accessToken && token) {
+          await fetch(`${RUNTIME.apiBaseUrl}/play/end`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ playToken: token }),
+          });
+          // Response is intentionally ignored - this is optional coordination
+          // TTL-based expiration remains the authoritative mechanism
+        }
+      } catch {
+        // Silently ignore - early end is optional, TTL handles expiration
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [verified, token, gameId, gameEnded]);
+
   if (loading) {
     return (
       <div className="page">
@@ -86,10 +156,22 @@ export default function Play() {
     );
   }
 
+  // Game ended - show thanks screen and navigate back
+  if (gameEnded) {
+    return (
+      <div className="page">
+        <h2>Thanks for Playing!</h2>
+        <p className="muted">Your session has ended.</p>
+        <button className="btn" onClick={() => navigate('/arcade')} style={{ marginTop: '16px' }}>
+          Back to Arcade
+        </button>
+      </div>
+    );
+  }
+
   // Token verified - render the game iframe
-  // The iframe URL would be the actual game mini-app
-  // For now, we show a placeholder that represents where the game would load
-  const gameUrl = `/games/${gameId}/index.html?token=${encodeURIComponent(token || '')}`;
+  // Note: playToken is NOT passed to iframe - games have no authority over sessions
+  const gameUrl = `/games/${gameId}/index.html`;
 
   return (
     <div className="page play-page">

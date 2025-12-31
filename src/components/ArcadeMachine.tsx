@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type MachineStatus = 'available' | 'locked' | 'busy';
 
 interface ArcadeMachineProps {

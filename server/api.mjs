@@ -173,7 +173,10 @@ app.post('/play/start', async (req, reply) => {
     return reply.code(403).send({ ok: false, error: 'INSUFFICIENT_CREDITS' });
   }
 
-  req.log.info({ userId, gameId, mode: result.mode, playToken: result.playToken }, 'Play session started');
+  req.log.info(
+    { userId, gameId, mode: result.mode, playToken: result.playToken },
+    'Play session started',
+  );
 
   return reply.send({
     ok: true,
@@ -213,6 +216,60 @@ app.get('/play/verify', async (req, reply) => {
     mode: session.mode,
     expiresAt: session.expires_at,
   });
+});
+
+/**
+ * POST /play/end
+ * Requests early termination of an active play session.
+ * This is a coordination mechanism - TTL remains authoritative.
+ * - No credit refunds
+ * - No wallet changes
+ * - Idempotent (repeated calls are safe)
+ */
+app.post('/play/end', async (req, reply) => {
+  const userId = await authenticateRequest(req, reply);
+  if (!userId) return; // Response already sent
+
+  const body = req.body || {};
+  const playToken = body.playToken;
+
+  if (typeof playToken !== 'string' || !playToken.trim()) {
+    return reply.code(400).send({ ok: false, error: 'playToken is required.' });
+  }
+
+  const session = db
+    .prepare('SELECT * FROM play_sessions WHERE play_token = ?')
+    .get(playToken.trim());
+
+  // Validate session exists
+  if (!session) {
+    return reply.code(404).send({ ok: false, error: 'INVALID_TOKEN' });
+  }
+
+  // Validate session belongs to authenticated user
+  if (session.user_id !== userId) {
+    return reply.code(403).send({ ok: false, error: 'SESSION_NOT_OWNED' });
+  }
+
+  const now = new Date();
+  const expiresAt = new Date(session.expires_at);
+
+  // Check if session is still active (expires_at > now)
+  // If already expired, this is idempotent - just return success
+  if (expiresAt <= now) {
+    return reply.send({ ok: true, message: 'Session already expired.' });
+  }
+
+  // End session by setting expires_at to now
+  const nowIso = now.toISOString();
+  db.prepare('UPDATE play_sessions SET expires_at = ? WHERE play_token = ?').run(
+    nowIso,
+    playToken.trim(),
+  );
+
+  req.log.info({ userId, playToken, gameId: session.game_id }, 'Play session ended early');
+
+  return reply.send({ ok: true });
 });
 
 try {

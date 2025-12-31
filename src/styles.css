@@ -178,7 +178,11 @@ p {
     linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%),
     linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%);
   background-size: 40px 40px;
-  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  background-position:
+    0 0,
+    0 20px,
+    20px -20px,
+    -20px 0px;
   opacity: 0.5;
   z-index: 0;
 }
@@ -206,14 +210,23 @@ p {
 }
 
 @keyframes neon-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+  0%,
+  19%,
+  21%,
+  23%,
+  25%,
+  54%,
+  56%,
+  100% {
     text-shadow:
       0 0 10px #ff00ff,
       0 0 20px #ff00ff,
       0 0 40px #ff00ff,
       0 0 80px #ff00ff;
   }
-  20%, 24%, 55% {
+  20%,
+  24%,
+  55% {
     text-shadow: none;
   }
 }
@@ -228,8 +241,13 @@ p {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Status bar */
@@ -347,7 +365,9 @@ p {
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* Arcade floor area */
@@ -581,7 +601,9 @@ p {
 }
 
 .arcade-machine--available:hover .machine-title {
-  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+  text-shadow:
+    0 0 10px #00ff00,
+    0 0 20px #00ff00;
 }
 
 /* Locked state - dimmed */
@@ -605,8 +627,13 @@ p {
 }
 
 @keyframes machine-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 .arcade-machine--busy .machine-glow {
@@ -616,8 +643,13 @@ p {
 }
 
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .arcade-machine--busy .machine-screen {
