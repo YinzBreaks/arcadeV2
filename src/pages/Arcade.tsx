@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ArcadeMachine, { type MachineStatus } from '../components/ArcadeMachine';
 import { RUNTIME } from '../config/runtime';
 import { supabase } from '../lib/supabase';
 
@@ -10,10 +11,20 @@ interface Game {
   description: string;
 }
 
+// Game catalog - arranged in rows for the floor layout
 const GAMES: Game[] = [
-  { id: 'flappy', title: 'Flappy Clone', description: 'Tap to fly through pipes.' },
-  { id: 'snake', title: 'Snake', description: 'Classic snake game.' },
-  { id: 'breakout', title: 'Breakout', description: 'Break all the bricks!' },
+  { id: 'flappy', title: 'FLAPPY', description: 'Tap to fly through pipes.' },
+  { id: 'snake', title: 'SNAKE', description: 'Classic snake game.' },
+  { id: 'breakout', title: 'BREAKOUT', description: 'Break all the bricks!' },
+  { id: 'pong', title: 'PONG', description: 'Classic paddle game.' },
+  { id: 'asteroids', title: 'ASTEROIDS', description: 'Shoot space rocks.' },
+  { id: 'pacman', title: 'PAC-MAN', description: 'Eat dots, avoid ghosts.' },
+];
+
+// Arrange games into rows for spatial layout
+const ARCADE_ROWS = [
+  GAMES.slice(0, 3), // Row 1: first 3 machines
+  GAMES.slice(3, 6), // Row 2: next 3 machines
 ];
 
 export default function Arcade() {
@@ -22,6 +33,7 @@ export default function Arcade() {
   const [authLoading, setAuthLoading] = React.useState(true);
   const [busyGame, setBusyGame] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [lockedReason, setLockedReason] = React.useState<string | null>(null);
   const [wallet, setWallet] = React.useState<{
     credits: number;
     passExpiresAt: string | null;
@@ -67,9 +79,18 @@ export default function Arcade() {
     }
   }, [session?.access_token, refreshWallet]);
 
+  // Clear error after timeout
+  React.useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   async function startGame(gameId: string) {
     if (!session?.access_token) return;
     setError(null);
+    setLockedReason(null);
     setBusyGame(gameId);
 
     try {
@@ -90,9 +111,11 @@ export default function Arcade() {
 
       if (!res.ok || !data.ok || !data.playToken) {
         if (data.error === 'INSUFFICIENT_CREDITS') {
-          setError('Not enough credits. Buy more at the Coin Machine!');
+          setError('Not enough credits!');
+          setLockedReason('credits');
         } else if (data.error === 'ACTIVE_SESSION_EXISTS') {
           setError('You are already playing a game.');
+          setLockedReason('session');
         } else {
           setError(data.error || `Request failed (${res.status})`);
         }
@@ -108,10 +131,19 @@ export default function Arcade() {
     }
   }
 
+  function getMachineStatus(gameId: string): MachineStatus {
+    if (busyGame === gameId) return 'busy';
+    if (busyGame !== null) return 'locked'; // Another game is starting
+    if (lockedReason === 'session') return 'locked'; // Active session elsewhere
+    return 'available';
+  }
+
   if (authLoading) {
     return (
-      <div className="page">
-        <h2>Loading...</h2>
+      <div className="arcade-floor">
+        <div className="arcade-loading">
+          <div className="arcade-loading-text">LOADING...</div>
+        </div>
       </div>
     );
   }
@@ -123,39 +155,82 @@ export default function Arcade() {
   const hasPass = wallet?.passExpiresAt && new Date(wallet.passExpiresAt) > new Date();
 
   return (
-    <div className="page">
-      <h2>Arcade</h2>
-      <p className="muted">Choose a game to play.</p>
+    <div className="arcade-floor">
+      {/* Neon sign header */}
+      <header className="arcade-header">
+        <h1 className="arcade-title">RESISTANCE ARCADE</h1>
+        <div className="arcade-subtitle">INSERT COIN TO PLAY</div>
+      </header>
 
-      <div className="card">
-        <div>
-          <strong>Credits:</strong> {wallet ? wallet.credits : '...'}
+      {/* Status bar */}
+      <div className="arcade-status-bar">
+        <div className="status-item">
+          <span className="status-label">CREDITS</span>
+          <span className="status-value">{wallet ? wallet.credits : '...'}</span>
         </div>
-        <div>
-          <strong>Pass:</strong> {hasPass ? 'Active' : 'None'}
+        <div className="status-item">
+          <span className="status-label">PASS</span>
+          <span className={`status-value ${hasPass ? 'status-value--active' : ''}`}>
+            {hasPass ? 'ACTIVE' : 'NONE'}
+          </span>
         </div>
-        <Link to="/kiosk" className="btn" style={{ display: 'inline-block', marginTop: '8px' }}>
-          Buy Credits
+        <Link to="/kiosk" className="arcade-coin-btn">
+          🪙 BUY CREDITS
         </Link>
       </div>
 
-      {error && <div className="error">{error}</div>}
+      {/* Error toast */}
+      {error && (
+        <div className="arcade-toast">
+          <span className="arcade-toast-icon">⚠️</span>
+          <span>{error}</span>
+          {lockedReason === 'credits' && (
+            <Link to="/kiosk" className="arcade-toast-link">
+              Get Credits →
+            </Link>
+          )}
+        </div>
+      )}
 
-      <div className="grid">
-        {GAMES.map((g) => (
-          <div className="tile" key={g.id}>
-            <h3>{g.title}</h3>
-            <p className="muted">{g.description}</p>
-            <button
-              className="btn"
-              onClick={() => startGame(g.id)}
-              disabled={busyGame !== null}
-            >
-              {busyGame === g.id ? 'Starting...' : 'Play (1 Credit)'}
-            </button>
+      {/* Arcade floor with machines */}
+      <div className="arcade-floor-area">
+        {/* Decorative entrance */}
+        <div className="arcade-entrance">
+          <div className="entrance-door entrance-door--left" />
+          <div className="entrance-mat">ENTER</div>
+          <div className="entrance-door entrance-door--right" />
+        </div>
+
+        {/* Machine rows */}
+        {ARCADE_ROWS.map((row, rowIndex) => (
+          <div className="arcade-row" key={rowIndex}>
+            {row.map((game) => (
+              <ArcadeMachine
+                key={game.id}
+                gameId={game.id}
+                title={game.title}
+                status={getMachineStatus(game.id)}
+                onClick={() => startGame(game.id)}
+              />
+            ))}
           </div>
         ))}
+
+        {/* Decorative elements */}
+        <div className="arcade-decorations">
+          <div className="arcade-deco arcade-deco--prize">
+            <span className="deco-icon">🏆</span>
+            <span className="deco-label">PRIZES</span>
+          </div>
+          <div className="arcade-deco arcade-deco--change">
+            <span className="deco-icon">💰</span>
+            <span className="deco-label">CHANGE</span>
+          </div>
+        </div>
       </div>
+
+      {/* Floor pattern overlay */}
+      <div className="arcade-floor-pattern" />
     </div>
   );
 }
