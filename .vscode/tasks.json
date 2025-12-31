@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev:all",
+      "type": "shell",
+      "command": "npm run dev:all",
+      "problemMatcher": []
+    },
+    {
+      "label": "backend",
+      "type": "shell",
+      "command": "npm run backend",
+      "problemMatcher": []
+    },
+    {
+      "label": "check",
+      "type": "shell",
+      "command": "npm run check",
+      "problemMatcher": []
+    }
+  ]
+}

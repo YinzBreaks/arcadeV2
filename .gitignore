@@ -1,0 +1,17 @@
+node_modules
+dist
+coverage
+*.log
+
+.env
+.env.*
+!.env.example
+
+data/*.db
+data/*.db-*
+
+# VS Code (share only curated files)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/extensions.json

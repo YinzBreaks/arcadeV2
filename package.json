@@ -1,0 +1,50 @@
+{
+  "name": "resistance-arcade-pwa",
+  "private": true,
+  "version": "0.3.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11.0 <21"
+  },
+  "packageManager": "npm@10.2.4",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "api": "node server/api.mjs",
+    "webhook": "node server/webhook.mjs",
+    "backend": "concurrently -k -n api,webhook \"npm run api\" \"npm run webhook\"",
+    "dev:all": "concurrently -k -n web,api,webhook \"npm run dev\" \"npm run api\" \"npm run webhook\"",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
+    "check": "npm run typecheck && npm run lint && npm run format"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/rate-limit": "^9.1.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "better-sqlite3": "^11.3.0",
+    "fastify": "^4.28.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.4",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.1",
+    "@typescript-eslint/parser": "^8.0.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.0.1",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.11",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.2"
+  }
+}
